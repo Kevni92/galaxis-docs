@@ -6,10 +6,10 @@ Dieser Bereich beschreibt die übergeordnete Identität von Galaxis.
 
 - [Spielvision von Galaxis](game-vision.md)
 - [Zielgruppe und gewünschtes Spielerlebnis](zielgruppe-und-spielerlebnis.md)
+- [Designprinzipien und Nicht-Ziele](designprinzipien-und-nicht-ziele.md)
 
 ## Geplante Dokumente
 
-- Designprinzipien und Nicht-Ziele
 - Alleinstellungsmerkmale
 - Verhältnis von Singleplayer und späterem Multiplayer
 
