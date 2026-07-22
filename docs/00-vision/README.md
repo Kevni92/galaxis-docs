@@ -2,13 +2,15 @@
 
 Dieser Bereich beschreibt die übergeordnete Identität von Galaxis.
 
-Geplante Dokumente:
+## Dokumente
 
-- Spielvision
-- Zielgruppe
-- Designprinzipien
+- [Spielvision von Galaxis](game-vision.md)
+
+## Geplante Dokumente
+
+- Zielgruppe und gewünschtes Spielerlebnis
+- Designprinzipien und Nicht-Ziele
 - Alleinstellungsmerkmale
-- Nicht-Ziele
 - Verhältnis von Singleplayer und späterem Multiplayer
 
 Zurück zur [Dokumentationsübersicht](../README.md).
