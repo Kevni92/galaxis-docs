@@ -1,14 +1,9 @@
 # Ereignisse
 
-Dieser Bereich beschreibt dynamische Situationen und Entscheidungen.
+Dieser Bereich beschreibt Ereignisse, Entscheidungen, Anomalien sowie regionale und galaktische Krisen.
 
-Geplante Dokumente:
+## Dokumente
 
-- Ereignismodell
-- Anomalien
-- Entscheidungsmöglichkeiten
-- Fristen und Standardentscheidungen
-- Ereignisketten
-- regionale und galaktische Krisen
+- [Ereignisse, Anomalien und Krisen](ereignisse-und-krisen.md)
 
 Zurück zur [Dokumentationsübersicht](../README.md).
