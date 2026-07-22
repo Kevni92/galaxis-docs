@@ -1,17 +1,10 @@
 # Kampagne
 
-Dieser Bereich beschreibt den langfristigen Rahmen einer Partie.
+Dieser Bereich beschreibt den langfristigen Kampagnenrahmen, Endgame, Sieg, Niederlage und Abschluss.
 
 ## Dokumente
 
 - [Kampagnenstruktur, Dauer, Sieg und Niederlage](kampagnenstruktur.md)
-
-## Geplante Dokumente
-
-- Kampagnenerzeugung
-- konkrete Siegespfade und Wertung
-- Endgame und Krisen
-- Abschlussbericht
-- optionales Weiterspielen
+- [Endgame und Kampagnenabschluss](endgame-und-abschluss.md)
 
 Zurück zur [Dokumentationsübersicht](../README.md).
