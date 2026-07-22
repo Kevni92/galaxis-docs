@@ -34,14 +34,16 @@ End-to-End-Demo und Alpha-Gate
 
 1. Der Server ist für Zustand, Zeit, Wissen, Zufall, Berechtigungen und Validierung autoritativ.
 2. Spieler und AI verwenden später dieselben fachlichen Befehle.
-3. Domaincode hängt nicht von HTTP, JSON, Datenbank oder UI ab.
-4. Jede Alpha enthält Persistenz, Fehlerzustände und Tests; diese werden nicht auf einen späteren „Aufräummilestone“ verschoben.
+3. Domaincode hängt nicht von Fastify, TypeBox, JSON, PostgreSQL, Kysely, Node-I/O oder UI ab.
+4. Jede Alpha enthält Persistenz, Fehlerzustände und Tests; diese werden nicht auf einen späteren Aufräummilestone verschoben.
 5. OpenAPI wird vor unabhängiger Client-/Serverarbeit konkretisiert.
 6. Balancingwerte liegen versioniert und serverseitig vor.
 7. Jede Alpha besitzt genau eine sichtbare Abnahmedemo.
 8. Eine spätere Alpha darf bereits intern vorbereitete Daten besitzen, diese aber nicht unkontrolliert an den Client freigeben.
 9. Keine Alpha beginnt mit einer großen UI-Neugestaltung. Erst der funktionale Schnitt, danach spiralförmige Verbesserung.
 10. Änderungen bleiben kleine PRs mit einer klaren Feature-ID.
+11. TypeScript-Typen ersetzen keine Laufzeitvalidierung externer Daten.
+12. Die gemeinsame Sprache von Client und Server erlaubt keine gemeinsame clientseitige Fachlogik; der Server bleibt die einzige autoritative Wahrheit.
 
 ## 3. Repository- und GitHub-Modell
 
@@ -59,9 +61,9 @@ Enthält:
 
 Enthält:
 
-- Domain- und Applicationlogik,
+- TypeScript-Domain- und Applicationlogik,
 - Persistenz,
-- REST-Adapter,
+- Fastify-REST-Adapter,
 - Accounts und Sessions,
 - Simulation, Zeit und Zufall,
 - Balancingdaten und Headless-Szenarien,
@@ -105,65 +107,92 @@ Ein GitHub Project kann manuell als Kanban- oder Zeitachsenansicht ergänzt werd
 
 ## 5.1 Ziel
 
-Nach einem frischen Checkout können Server, PostgreSQL und Client reproduzierbar gestartet werden. Ein Benutzer kann sich registrieren, anmelden, seine Session prüfen, eine geschützte Clientseite öffnen und sich abmelden.
+Nach einem frischen Checkout können TypeScript-Server, PostgreSQL und Client reproduzierbar gestartet werden. Ein Benutzer kann sich registrieren, anmelden, seine Session prüfen, eine geschützte Clientseite öffnen und sich abmelden.
 
-A0 enthält noch keine Kampagne, kein Reich, keinen Planeten und keine Spielsimulation. Die deterministischen Provider und der Balancing-Loader werden trotzdem bereits angelegt, damit spätere Systeme nicht auf globale Zeit- oder Zufallsquellen zurückgreifen.
+A0 enthält noch keine Kampagne, kein Reich, keinen Planeten und keine Spielsimulation. Deterministische Provider und Balancing-Loader werden trotzdem bereits angelegt, damit spätere Systeme nicht auf globale Systemzeit oder Zufallsquellen zurückgreifen.
 
-## 5.2 Technische Entscheidungen
+## 5.2 Verbindlicher Serverstack
 
-- Serverstack: [Decision 0005](../decisions/0005-a0-server-technologiestack.md)
+Maßgeblich ist [Decision 0005](../decisions/0005-a0-server-technologiestack.md).
+
+A0 verwendet:
+
+- Node.js 24 LTS, genaue Patchversion im Repository gepinnt,
+- TypeScript strict und ECMAScript Modules,
+- pnpm über Corepack,
+- Fastify,
+- TypeBox an technischen Grenzen,
+- Pino,
+- PostgreSQL mit `pg` und Kysely,
+- versionierte SQL-Migrationen,
+- Argon2id über `argon2`,
+- Node.js `crypto` für Sessiontokens und Hashes,
+- Vitest, Fastify `inject()` und Testcontainers,
+- ESLint, Prettier und automatisierte Architekturprüfung.
+
+Der Server wird mindestens gegliedert in:
+
+```text
+src/app/composition-root
+src/domain
+src/application
+src/infrastructure
+src/transport/http
+```
+
+Domaincode verwendet weder `Date.now()`, `new Date()`, `Math.random()`, `crypto.randomUUID()`, Fastify, Kysely noch `process.env` direkt.
+
+Weitere Quellen:
+
 - Clientstack: [Decision 0006](../decisions/0006-alpha-client-technologiestack.md)
 - OpenAPI-Arbeit: #128
+- lokale Codex-Anleitung: [CODEX-A0.md](CODEX-A0.md)
 
-## 5.3 Empfohlene Abarbeitungsreihenfolge
+## 5.3 Bootstrap vor dem ersten Codex-Issue
 
-### Bootstrap vor dem ersten Codex-Issue
-
-Im leeren Serverrepository fehlt zunächst das `docs/`-Submodule. Der einzige zulässige Schritt vor dem Lesen der Docs ist daher:
+Im leeren Serverrepository fehlt zunächst das `docs/`-Submodule. Der einzige zulässige Schritt vor dem Lesen der Docs ist:
 
 ```bash
 git submodule add https://github.com/Kevni92/galaxis-docs.git docs
 git submodule update --init --recursive
 ```
 
-Danach müssen `AGENTS.md`, `docs/AGENTS.md`, `docs/WORKFLOW.md`, `docs/TESTING.md`, `docs/SOURCE-CODE.md`, Decision 0005 und diese Roadmap gelesen werden.
+Danach werden `AGENTS.md`, `docs/AGENTS.md`, `docs/WORKFLOW.md`, `docs/TESTING.md`, `docs/SOURCE-CODE.md`, Decision 0005 und diese Roadmap gelesen.
 
-### Server
+## 5.4 Empfohlene Serverreihenfolge
 
 | Reihenfolge | Issue | Ergebnis |
 |---:|---|---|
-| 1 | `Kevni92/galaxis-server#1` | Stack und Architekturgrenzen |
-| 2 | `Kevni92/galaxis-server#2` | Repository-Basis, CMake, vcpkg, Docs-Submodule |
+| 1 | `Kevni92/galaxis-server#1` | TypeScript-/Node-Stack und Architekturgrenzen |
+| 2 | `Kevni92/galaxis-server#2` | pnpm-/TypeScript-Repositorybasis und Docs-Submodule |
 | 3 | `Kevni92/galaxis-server#8` | injizierbare Zeit-, Zufalls- und ID-Provider |
-| 4 | `Kevni92/galaxis-server#3` | Konfiguration, Logging, Health und Shutdown |
-| 5 | `Kevni92/galaxis-server#4` | PostgreSQL und Migrationen |
-| 6 | `Kevni92/galaxis-server#5` | REST-Kern und Fehlerformat |
-| 7 | `Kevni92/galaxis-server#9` | Balancing-Manifest, Schema und Hash |
-| 8 | `Kevni92/galaxis-server#6` | Account und Registrierung |
-| 9 | `Kevni92/galaxis-server#7` | Bearer-Sessions und Auth-Middleware |
+| 4 | `Kevni92/galaxis-server#3` | Konfiguration, Pino, Health und Shutdown |
+| 5 | `Kevni92/galaxis-server#4` | PostgreSQL, Kysely und SQL-Migrationen |
+| 6 | `Kevni92/galaxis-server#5` | Fastify-REST-Kern und Fehlerformat |
+| 7 | `Kevni92/galaxis-server#9` | Balancing-Manifest, TypeBox-Schema und Hash |
+| 8 | `Kevni92/galaxis-server#6` | Account und Registrierung mit Argon2id |
+| 9 | `Kevni92/galaxis-server#7` | Bearer-Sessions und Auth-Hook |
 | 10 | `Kevni92/galaxis-server#10` | OpenAPI-Contract-Tests |
 | 11 | `Kevni92/galaxis-server#11` | lokale Gesamtumgebung und CI-Gate |
 
-Die Reihenfolge ist bewusst nicht strikt nach Issue-Nummer. Die deterministischen Provider werden früh eingeführt, bevor Infrastruktur oder spätere Domainmodule direkte Systemabhängigkeiten etablieren.
+Die Reihenfolge ist bewusst nicht strikt nach Issue-Nummer. Deterministische Provider werden früh eingeführt, bevor Infrastruktur oder spätere Domainmodule direkte Systemabhängigkeiten etablieren.
 
-### Client
+## 5.5 Clientreihenfolge
 
-Der Client beginnt erst, sobald Health, REST-Fehlerformat und der Auth-Vertrag stabil genug sind.
+Der Client beginnt, sobald Health, REST-Fehlerformat und Auth-Vertrag stabil genug sind.
 
-| Reihenfolge | Issue | Ergebnis |
-|---:|---|---|
-| 1 | `Kevni92/galaxis-client#1` | Vite/Vue-App-Shell |
-| 2 | `Kevni92/galaxis-client#2` | OpenAPI-Typen und REST-Client |
-| 3 | `Kevni92/galaxis-client#3` | Session-Store und geschützte Routen |
-| 4 | `Kevni92/galaxis-client#4` | Registrierung und Login |
-| 5 | `Kevni92/galaxis-client#5` | Lade-, Fehler- und Verbindungszustände |
-| 6 | `Kevni92/galaxis-client#6` | A0-End-to-End-Smoke |
+1. `galaxis-client#1` – Vite/Vue-App-Shell
+2. `galaxis-client#2` – OpenAPI-Typen und REST-Client
+3. `galaxis-client#3` – Session-Store und geschützte Routen
+4. `galaxis-client#4` – Registrierung und Login
+5. `galaxis-client#5` – Lade-, Fehler- und Verbindungszustände
+6. `galaxis-client#6` – A0-End-to-End-Smoke
 
-## 5.4 A0-Abnahmedemo
+## 5.6 A0-Abnahmedemo
 
 1. PostgreSQL starten.
-2. Migrationen ausführen.
-3. Server starten.
+2. Migrationen über pnpm-Skript ausführen.
+3. TypeScript-Server starten.
 4. Client starten.
 5. Account registrieren.
 6. Mit diesem Account anmelden.
@@ -172,17 +201,17 @@ Der Client beginnt erst, sobald Health, REST-Fehlerformat und der Auth-Vertrag s
 9. Abmelden.
 10. Erneuter Zugriff wird mit definiertem `401` abgewiesen.
 
-## 5.5 A0-Gate
+## 5.7 A0-Gate
 
 A0 ist abgeschlossen, wenn:
 
 - Docs-Issue #128 abgeschlossen ist,
 - Server-Issues #1 bis #11 abgeschlossen sind,
 - Client-Issues #1 bis #6 abgeschlossen sind,
-- frischer Checkout gemäß README funktioniert,
+- frischer Checkout mit Node/pnpm gemäß README funktioniert,
 - Migrationen idempotent laufen,
 - Passwörter und Tokens nicht im Klartext gespeichert oder geloggt werden,
-- Contract- und E2E-Test grün sind,
+- Format, Lint, Typprüfung, Unit-, Integration-, Contract- und E2E-Tests grün sind,
 - keine Gameplayregel in A0 eingeführt wurde.
 
 ---
@@ -199,12 +228,14 @@ Der Heimatplanet darf nicht als isolierter Datensatz erzeugt werden. Seine ID, s
 
 A1 benötigt noch keine große oder abschließend balancierte Galaxie. Der Generator muss aber bereits dieselben Invarianten verwenden, die A3 für interstellare Erkundung benötigt.
 
-## 6.3 Docs
+## 6.3 Umsetzung
+
+Docs:
 
 - Umbrella #116
 - OpenAPI #129
 
-## 6.4 Serverreihenfolge
+Server:
 
 1. `galaxis-server#12` – Kampagnen erstellen und auflisten
 2. `galaxis-server#13` – minimale Startgalaxie
@@ -215,9 +246,7 @@ A1 benötigt noch keine große oder abschließend balancierte Galaxie. Der Gener
 7. `galaxis-server#17` – gefilterte A1-REST-Ressourcen
 8. `galaxis-server#19` – Referenzszenario und Abnahmetest
 
-Persistenz darf technisch parallel zu den Aggregaten entstehen, das Gate verlangt jedoch den vollständigen Save/Load-Roundtrip vor dem Client-E2E.
-
-## 6.5 Clientreihenfolge
+Client:
 
 1. `galaxis-client#7` – Kampagnenliste und Erstellung
 2. `galaxis-client#8` – Kampagnenzustand und App-Shell
@@ -226,20 +255,7 @@ Persistenz darf technisch parallel zu den Aggregaten entstehen, das Gate verlang
 5. `galaxis-client#11` – Navigation und Deep Links
 6. `galaxis-client#12` – A1-End-to-End-Demo
 
-## 6.6 A1-Abnahmedemo
-
-Ein neuer Benutzer registriert sich, erstellt eine Kampagne mit festem Seed und sieht anschließend:
-
-- Kampagnenzeit und Status,
-- sein Startreich,
-- genau ein bekanntes Heimatsternsystem,
-- den Heimatplaneten,
-- die aktive Heimatkolonie,
-- Startbevölkerung und Grundversorgung.
-
-Nach Serverneustart und Seitenreload ist derselbe Zustand vorhanden.
-
-## 6.7 A1-Gate
+## 6.4 A1-Gate
 
 - gleicher Seed und gleiche Version ergeben denselben fachlichen Startzustand,
 - unbekannte Nachbarsysteme werden nicht geleakt,
@@ -257,12 +273,14 @@ Das Startreich besitzt ein statisch definiertes Erkundungsschiff in einer Flotte
 
 A2 enthält noch keinen Schiffsbau, keinen Kampf und keine interstellare Erkundung.
 
-## 7.2 Docs
+## 7.2 Umsetzung
+
+Docs:
 
 - Umbrella #117
 - OpenAPI #130
 
-## 7.3 Serverreihenfolge
+Server:
 
 1. `galaxis-server#20` – MVP-Schiffskatalog
 2. `galaxis-server#21` – Ship-/Fleet-Aggregate
@@ -272,7 +290,7 @@ A2 enthält noch keinen Schiffsbau, keinen Kampf und keine interstellare Erkundu
 6. `galaxis-server#25` – REST-Ressourcen
 7. `galaxis-server#26` – A2-Szenario
 
-## 7.4 Clientreihenfolge
+Client:
 
 1. `galaxis-client#13` – lokale SVG-Systemkarte
 2. `galaxis-client#14` – Schiff-/Flottenpanel
@@ -280,18 +298,7 @@ A2 enthält noch keinen Schiffsbau, keinen Kampf und keine interstellare Erkundu
 4. `galaxis-client#16` – Reisefortschritt
 5. `galaxis-client#17` – A2-End-to-End-Demo
 
-## 7.5 A2-Abnahmedemo
-
-1. A1-Kampagne öffnen.
-2. Erkundungsschiff auswählen.
-3. Lokales Ziel im Heimatsternsystem auswählen.
-4. Dauer und Ziel bestätigen.
-5. Befehl serverseitig annehmen lassen.
-6. Kampagnenzeit im Test kontrolliert fortsetzen.
-7. Flotte kommt am Ziel an.
-8. Reload während und nach Reise verändert den Zustand nicht.
-
-## 7.6 A2-Gate
+## 7.3 A2-Gate
 
 - Flotte besitzt konsistente Mitgliedschaft und Position,
 - doppelte Command-ID erzeugt keine Doppelreise,
@@ -305,14 +312,16 @@ A2 enthält noch keinen Schiffsbau, keinen Kampf und keine interstellare Erkundu
 
 ## 8.1 Ziel
 
-Das Erkundungsschiff kann über eine bekannte Verbindung zu einem zunächst unbekannten Nachbarsystem reisen. Nach Ankunft startet der Spieler einen Erkundungsauftrag. Beim serverseitigen Abschluss werden die zulässigen Systeminformationen reichsspezifisch freigegeben.
+Das Erkundungsschiff kann über eine bekannte Verbindung zu einem zunächst unbekannten Nachbarsystem reisen. Nach Ankunft startet der Spieler einen Erkundungsauftrag. Beim serverseitigen Abschluss werden zulässige Systeminformationen reichsspezifisch freigegeben.
 
-## 8.2 Docs
+## 8.2 Umsetzung
+
+Docs:
 
 - Umbrella #118
 - OpenAPI #131
 
-## 8.3 Serverreihenfolge
+Server:
 
 1. `galaxis-server#27` – interstellares Verbindungs- und Routenmodell
 2. `galaxis-server#28` – reichsspezifisches Wissen
@@ -322,7 +331,7 @@ Das Erkundungsschiff kann über eine bekannte Verbindung zu einem zunächst unbe
 6. `galaxis-server#32` – Galaxie- und Changes-REST
 7. `galaxis-server#33` – A3-Szenario
 
-## 8.4 Clientreihenfolge
+Client:
 
 1. `galaxis-client#18` – wissensgefilterte Galaxiekarte
 2. `galaxis-client#19` – Route und Reisebefehl
@@ -331,18 +340,7 @@ Das Erkundungsschiff kann über eine bekannte Verbindung zu einem zunächst unbe
 5. `galaxis-client#21` – Ergebnis und Rückkehrübersicht
 6. `galaxis-client#23` – A3-End-to-End-Demo
 
-## 8.5 A3-Abnahmedemo
-
-1. A2-Kampagne öffnen.
-2. Unbekanntes Nachbarsystem mit sichtbarer Verbindung auswählen.
-3. Erkundungsschiff entsenden.
-4. Transitstatus sehen.
-5. Nach Ankunft Erkundung starten.
-6. Abwesenheit simulieren.
-7. Rückkehrbericht öffnen.
-8. Neu freigegebene System- und Himmelskörperdaten sehen.
-
-## 8.6 A3-Gate
+## 8.3 A3-Gate
 
 - interne Wahrheit und Reichswissen sind getrennt,
 - unbekannte IDs und Objektzahlen werden nicht übertragen,
@@ -355,92 +353,49 @@ Das Erkundungsschiff kann über eine bekannte Verbindung zu einem zunächst unbe
 
 # 9. Spätere Alpha-Stufen
 
-Für A4 bis A12 werden zunächst Umbrella-Issues und Milestones geführt. Konkrete Server- und Client-Issues werden jeweils erst detailliert, wenn die vorhergehende Alpha ihr Gate erreicht oder die unmittelbar notwendigen Verträge vorbereitet werden. Dadurch vermeiden wir falsche Präzision und veraltete Issuepakete.
+Für A4 bis A12 werden zunächst Umbrella-Issues und Milestones geführt. Konkrete Server- und Client-Issues werden jeweils erst detailliert, wenn die vorhergehende Alpha ihr Gate erreicht oder unmittelbar notwendige Verträge vorbereitet werden.
 
 ## A4 – Zweite Kolonie
 
-- Kolonieschiff oder anderer dokumentierter Kolonisierungsmechanismus,
-- Zielprüfung,
-- Kolonisierungsauftrag,
-- Aufbauphase,
-- zweite Kolonie in Navigation und Verwaltung.
-
-**Nicht enthalten:** tiefe Wirtschaft, differenzierte Bevölkerung und Handel.
+Kolonisierungsmechanismus, Zielprüfung, Auftrag, Aufbauphase und zweite Kolonie in Navigation und Verwaltung.
 
 ## A5 – Bevölkerung und Arbeit
 
-- Bevölkerungsgruppen,
-- Erwerbspotenzial und Qualifikation,
-- Beschäftigungsprioritäten,
-- natürliche Entwicklung und Migration,
-- einfache Produktivitätswirkung.
+Bevölkerungsgruppen, Erwerbspotenzial, Qualifikation, Beschäftigungsprioritäten, natürliche Entwicklung, Migration und Produktivität.
 
 ## A6 – Wirtschaft, Gebäude und Versorgung
 
-- Güterkatalog,
-- Gebäude und Bauaufträge,
-- Inputs und Outputs,
-- Lager und Reservierung,
-- Bedürfnisse und Mangel,
-- Haushalt und Unterhalt,
-- erster Transport zwischen Kolonien.
+Güter, Gebäude, Bauaufträge, Produktion, Lager, Reservierung, Bedürfnisse, Mangel, Haushalt, Unterhalt und erste Transporte.
 
 ## A7 – Forschung und Technologien
 
-- Forschungsleistung,
-- Technologieauswahl,
-- Voraussetzungen,
-- Fortschritt und Abschluss,
-- Freischaltungen,
-- Spezialisierung und Aufholen.
+Forschungsleistung, Auswahl, Voraussetzungen, Fortschritt, Abschluss, Freischaltungen, Spezialisierung und Aufholen.
 
 ## A8 – Flottenlogistik und Reparatur
 
-- mehrere Schiffe und Flotten,
-- Aufteilen und Zusammenführen,
-- Reichweite und Versorgung,
-- Schäden,
-- Reparatur und Bergung.
+Mehrere Flotten, Aufteilen, Zusammenführen, Reichweite, Versorgung, Schäden, Reparatur und Bergung.
 
 ## A9 – Andere Reiche und Erstkontakt
 
-- mehrere Reiche,
-- getrennte Controller und Wissensstände,
-- Kontaktentdeckung,
-- Erstkontaktbericht,
-- einfache Beziehungsgrundlage.
+Mehrere Reiche, getrennte Controller und Wissensstände, Kontaktentdeckung, Bericht und einfache Beziehung.
 
 ## A10 – Diplomatie und Handel
 
-- diplomatische Aktionen,
-- Angebote,
-- Verträge,
-- Handelsbeziehungen,
-- Vertragswirkung und Bruch.
+Diplomatische Aktionen, Angebote, Verträge, Handelsbeziehungen, Wirkungen und Vertragsbruch.
 
 ## A11 – Konflikt und Raumkampf
 
-- Kriegserklärung,
-- Flottenbegegnung,
-- deterministischer Kampf mit kontrolliertem Zufall,
-- Rückzug,
-- Schäden und Verluste,
-- begrenzter Friedensschluss.
+Kriegserklärung, Flottenbegegnung, deterministischer Kampf mit kontrolliertem Zufall, Rückzug, Schäden, Verluste und Frieden.
 
 ## A12 – Ereignisse, Krise und Kampagnenabschluss
 
-- Ereigniszustandsmaschinen,
-- Entscheidungen und Fristen,
-- galaktische Krise,
-- mehrere Beiträge und Gegenmaßnahmen,
-- Siegespfade,
-- Abschlussbericht und reproduzierbarer Kampagnenendzustand.
+Ereigniszustandsmaschinen, Entscheidungen, Fristen, Krise, Gegenmaßnahmen, Siegespfade und Abschlussbericht.
 
 ---
 
 # 10. Balancing-Zuordnung
 
-Balancing-Issues behalten ihre B1–B4-Milestones. Diese Roadmap ordnet sie zusätzlich den Alphas zu, ohne ihre Milestones zu verändern.
+Balancing-Issues behalten ihre B1–B4-Milestones. Diese Roadmap ordnet sie zusätzlich den Alphas zu.
 
 | Alpha | Unmittelbar relevante Balancing-Issues |
 |---|---|
@@ -458,9 +413,9 @@ Balancing-Issues behalten ihre B1–B4-Milestones. Diese Roadmap ordnet sie zus�
 | A11 | #93 bis #96 sowie B2-Simulationswerkzeuge #101 bis #105 |
 | A12 | #97 Ereignisse/Krise/Endgame, B2 #101–#105, B3 #106–#109, B4 #110–#113 |
 
-## Balancing-Arbeitsweise je Alpha
+Balancing-Arbeitsweise je Alpha:
 
-1. Nur die für die Alpha notwendigen Parameter implementieren.
+1. Nur notwendige Parameter implementieren.
 2. Werte als Baseline markieren, nicht als Release behaupten.
 3. Referenzfixture parallel zum Domainmodul erstellen.
 4. Vorher-/Nachher-Läufe mit identischen Seeds verwenden.
@@ -471,19 +426,17 @@ Balancing-Issues behalten ihre B1–B4-Milestones. Diese Roadmap ordnet sie zus�
 
 # 11. PR- und Codex-Arbeitsweise
 
-## Ein Issue pro Arbeitszweig
-
-Codex soll grundsätzlich genau ein konkretes Issue pro Branch bearbeiten. Eine Ausnahme ist nur ein sehr kleiner vorbereitender Docs- oder Submodule-Schritt, der ausdrücklich im Issue genannt ist.
+Codex bearbeitet grundsätzlich genau ein konkretes Issue pro Branch.
 
 Empfohlene Branchbenennung:
 
 ```text
 codex/a0-server-001-stack
 codex/a0-server-002-repo
-codex/a0-server-003-runtime
+codex/a0-server-008-runtime
 ```
 
-## Vor jedem Issue
+Vor jedem Issue:
 
 1. `AGENTS.md` lesen.
 2. Docs-Submodule aktualisieren.
@@ -492,16 +445,7 @@ codex/a0-server-003-runtime
 5. Tests bestimmen.
 6. kleinsten sinnvollen PR-Umfang festlegen.
 
-## Abschluss eines Issues
-
-- Implementierung erfüllt alle Akzeptanzkriterien.
-- Tests und tatsächliche Ergebnisse werden im PR genannt.
-- Modul-README und Fachverweise sind aktuell.
-- keine zusätzliche undokumentierte Regel wurde eingeführt.
-- Folgeprobleme erhalten eigene Issues.
-- Docs-Submodule wird nur bewusst aktualisiert.
-
----
+Ein abgeschlossener PR enthält Feature-ID, Quellen, tatsächliche Tests, bekannte Risiken und aktualisierte Navigation. Folgeprobleme erhalten eigene Issues.
 
 # 12. Fortschritts- und Alpha-Gates
 
@@ -512,20 +456,20 @@ Eine Alpha wird nicht allein dadurch abgeschlossen, dass alle Issues geschlossen
 - definierte Fehler- und Berechtigungsfälle,
 - Contract-Tests,
 - Headless-/Integrationsszenario,
-- minimaler Client-E2E,
-- dokumentierter Balancingstand,
+- minimalen Client-E2E,
+- dokumentierten Balancingstand,
 - keine roten bekannten Abweichungen.
 
-Vorbereitende Docs-Arbeit für die nächste Alpha darf parallel beginnen. Produktive Implementierung der nächsten Alpha beginnt jedoch erst, wenn das aktuelle Gate keine Architektur- oder Datenmodelländerung mehr erwarten lässt.
+Produktive Implementierung der nächsten Alpha beginnt erst, wenn das aktuelle Gate keine grundlegende Architektur- oder Datenmodelländerung mehr erwarten lässt.
 
 # 13. Nächster konkreter Schritt
 
 Der lokale Einstieg ist [CODEX-A0.md](CODEX-A0.md).
 
-Begonnen wird mit dem Serverrepository und folgendem Ablauf:
+Begonnen wird mit:
 
 1. Docs-Submodule bootstrapen.
-2. `galaxis-server#1` umsetzen.
-3. kleinen PR erstellen und prüfen.
-4. danach `galaxis-server#2` und die weitere A0-Reihenfolge abarbeiten.
-5. Client A0 erst starten, sobald REST-Kern und Auth-Vertrag stabil sind.
+2. `galaxis-server#1` mit TypeScript/Node.js umsetzen.
+3. kleinen Draft-PR erstellen und prüfen.
+4. danach `galaxis-server#2`, `#8` und die weitere A0-Reihenfolge abarbeiten.
+5. Client A0 beginnen, sobald REST-Kern und Auth-Vertrag stabil sind.
