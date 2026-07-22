@@ -28,3 +28,5 @@ NNNN-kurzer-titel.md
 - [0002 – Deterministische Graph-Galaxie mit reichsspezifischem Wissen](0002-deterministische-graph-galaxie.md) – angenommen
 - [0003 – MVP-Simulations- und Schnittstellenmodell](0003-mvp-simulations-und-schnittstellenmodell.md) – angenommen
 - [0004 – Versionierte Balancing-Schicht](0004-versionierte-balancing-schicht.md) – angenommen
+- [0005 – A0-Servertechnologiestack und Architekturgrenzen](0005-a0-server-technologiestack.md) – angenommen
+- [0006 – Alpha-Clienttechnologiestack](0006-alpha-client-technologiestack.md) – angenommen
