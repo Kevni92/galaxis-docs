@@ -1,0 +1,530 @@
+openapi: 3.1.0
+info:
+  title: Galaxis REST API
+  version: 1.0.0
+  license:
+    name: Galaxis project documentation
+    url: https://github.com/Kevni92/galaxis-docs
+  description: |
+    Maschinenlesbarer Grundvertrag für Galaxis REST API v1.
+    Die fachliche Quelle ist contracts/rest-api/galaxis-rest-v1.md.
+servers:
+  - url: /
+    description: Server-relative URL; außerhalb lokaler Entwicklung über HTTPS.
+tags:
+  - name: Health
+    description: Technische Prozess- und Bereitschaftsprüfungen.
+  - name: Authentication
+    description: Lokale Accounts und Bearer-Sessions.
+paths:
+  /health/live:
+    get:
+      tags: [Health]
+      operationId: getHealthLive
+      summary: Liveness prüfen
+      description: Liefert Erfolg, sobald der Prozess HTTP-Anfragen bedienen kann.
+      security: []
+      responses:
+        '200':
+          description: Prozess ist erreichbar.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiveHealthResponse'
+              examples:
+                live:
+                  $ref: '#/components/examples/LiveHealth'
+
+  /health/ready:
+    get:
+      tags: [Health]
+      operationId: getHealthReady
+      summary: Readiness prüfen
+      description: Prüft, ob die für den Serverbetrieb erforderlichen Abhängigkeiten bereit sind.
+      security: []
+      responses:
+        '200':
+          description: Server ist bereit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyHealthResponse'
+              examples:
+                ready:
+                  $ref: '#/components/examples/ReadyHealth'
+        '503':
+          description: Server ist vorübergehend nicht bereit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotReadyHealthResponse'
+              examples:
+                notReady:
+                  $ref: '#/components/examples/NotReadyHealth'
+
+  /api/v1/auth/accounts:
+    post:
+      tags: [Authentication]
+      operationId: createAuthAccount
+      summary: Lokalen Account registrieren
+      security: []
+      description: |
+        Legt einen lokalen Account an. Passwort und Passwort-Hash werden niemals
+        in einer Antwort übertragen. Eine Ablehnung wegen bereits verwendeter
+        Zugangsdaten verwendet dieselbe generische Fehlerform wie andere
+        Registrierungsablehnungen und darf keine fremden Accounts bestätigen.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+            examples:
+              createAccount:
+                $ref: '#/components/examples/CreateAccountRequest'
+      responses:
+        '201':
+          description: Account wurde angelegt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+              examples:
+                accountCreated:
+                  $ref: '#/components/examples/AccountResponse'
+        '400':
+          $ref: '#/components/responses/AccountRegistrationRejected'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/sessions:
+    post:
+      tags: [Authentication]
+      operationId: createAuthSession
+      summary: Bearer-Session anmelden
+      security: []
+      description: |
+        Prüft lokale Zugangsdaten und erstellt eine Session. Eine fehlgeschlagene
+        Anmeldung verwendet unabhängig vom Grund dieselbe Antwort, damit weder
+        unbekannte Accounts noch falsche Passwörter unterschieden werden können.
+        Das zurückgegebene Token wird als Bearer-Token für geschützte Anfragen verwendet.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionCredentialsRequest'
+            examples:
+              createSession:
+                $ref: '#/components/examples/SessionCredentialsRequest'
+      responses:
+        '201':
+          description: Session wurde erstellt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionCreatedResponse'
+              examples:
+                sessionCreated:
+                  $ref: '#/components/examples/SessionCreatedResponse'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailed'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/session:
+    get:
+      tags: [Authentication]
+      operationId: getCurrentAuthSession
+      summary: Aktuelle Bearer-Session prüfen
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Bearer-Token gehört zu einer gültigen Session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+              examples:
+                currentSession:
+                  $ref: '#/components/examples/SessionResponse'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/sessions/current:
+    delete:
+      tags: [Authentication]
+      operationId: deleteCurrentAuthSession
+      summary: Aktuelle Bearer-Session abmelden
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Session wurde beendet; die Antwort hat keinen Body.
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque-session-token
+      description: Bearer-Token aus POST /api/v1/auth/sessions.
+
+  schemas:
+    LiveHealthResponse:
+      type: object
+      required: [status, correlationId]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+          description: Livenessstatus.
+          example: ok
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+
+    ReadyHealthResponse:
+      type: object
+      required: [status, correlationId]
+      properties:
+        status:
+          type: string
+          enum: [ready]
+          description: Readinessstatus.
+          example: ready
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+
+    NotReadyHealthResponse:
+      type: object
+      required: [status, correlationId]
+      properties:
+        status:
+          type: string
+          enum: [not_ready]
+          description: Readinessstatus.
+          example: not_ready
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+
+    CreateAccountRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: Lokale Account-Adresse.
+          example: captain@example.test
+        password:
+          type: string
+          minLength: 1
+          format: password
+          writeOnly: true
+          description: Lokales Passwort; wird nie in Responses ausgegeben.
+          example: correct-horse-battery-staple
+
+    SessionCredentialsRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: Lokale Account-Adresse.
+          example: captain@example.test
+        password:
+          type: string
+          minLength: 1
+          format: password
+          writeOnly: true
+          description: Lokales Passwort; wird nie in Responses ausgegeben.
+          example: correct-horse-battery-staple
+
+    AccountResponse:
+      type: object
+      required: [accountId, email, createdAt]
+      properties:
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        email:
+          type: string
+          format: email
+          example: captain@example.test
+        createdAt:
+          $ref: '#/components/schemas/Instant'
+
+    SessionCreatedResponse:
+      type: object
+      required: [sessionId, accountId, email, token, createdAt, expiresAt]
+      properties:
+        sessionId:
+          $ref: '#/components/schemas/SessionId'
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        email:
+          type: string
+          format: email
+          example: captain@example.test
+        token:
+          type: string
+          minLength: 1
+          description: Opakes Bearer-Token für diese Session.
+          example: galaxis_session_opaque_token
+        createdAt:
+          $ref: '#/components/schemas/Instant'
+        expiresAt:
+          $ref: '#/components/schemas/Instant'
+
+    SessionResponse:
+      type: object
+      required: [sessionId, accountId, email, createdAt, expiresAt]
+      properties:
+        sessionId:
+          $ref: '#/components/schemas/SessionId'
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        email:
+          type: string
+          format: email
+          example: captain@example.test
+        createdAt:
+          $ref: '#/components/schemas/Instant'
+        expiresAt:
+          $ref: '#/components/schemas/Instant'
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+
+    Error:
+      type: object
+      required: [code, message, correlationId, retryable]
+      properties:
+        code:
+          type: string
+          enum:
+            - INVALID_REQUEST
+            - ACCOUNT_REGISTRATION_REJECTED
+            - AUTHENTICATION_FAILED
+            - SESSION_INVALID
+            - RATE_LIMITED
+            - INTERNAL_ERROR
+          description: Stabile maschinenlesbare Fehlerkennung.
+        message:
+          type: string
+          minLength: 1
+          description: Menschenverständliche und lokalisierbare Meldung.
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+        details:
+          type: array
+          description: Optionale Feld- oder Ursachenangaben ohne geheime Inhalte.
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        retryable:
+          type: boolean
+          description: Gibt an, ob eine Wiederholung grundsätzlich sinnvoll ist.
+        currentStateVersion:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Nur bei zustandsbezogenen Fehlern vorhanden.
+
+    ErrorDetail:
+      type: object
+      required: [field, reason]
+      properties:
+        field:
+          type: string
+          minLength: 1
+          example: email
+        reason:
+          type: string
+          minLength: 1
+          example: INVALID_FORMAT
+
+    CorrelationId:
+      type: string
+      minLength: 1
+      description: Kennung zur Zuordnung von Request und Serverprotokoll.
+      example: cor_01JABCDEF123456789
+
+    AccountId:
+      type: string
+      minLength: 1
+      description: Stabile, opake Account-ID.
+      example: acc_01JABCDEF123456789
+
+    SessionId:
+      type: string
+      minLength: 1
+      description: Stabile, opake Session-ID.
+      example: ses_01JABCDEF123456789
+
+    Instant:
+      type: string
+      format: date-time
+      description: ISO-8601-Zeitpunkt in UTC.
+      example: '2026-07-22T12:00:00Z'
+
+  responses:
+    InvalidRequest:
+      description: Request ist syntaktisch oder strukturell ungültig.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidRequest:
+              $ref: '#/components/examples/InvalidRequest'
+    AccountRegistrationRejected:
+      description: Registrierung wurde generisch abgelehnt, ohne fremde Accounts zu bestätigen.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            registrationRejected:
+              $ref: '#/components/examples/AccountRegistrationRejected'
+    AuthenticationFailed:
+      description: Zugangsdaten konnten nicht bestätigt werden.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            authenticationFailed:
+              $ref: '#/components/examples/AuthenticationFailed'
+    SessionInvalid:
+      description: Es fehlt eine gültige Bearer-Session.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            sessionInvalid:
+              $ref: '#/components/examples/SessionInvalid'
+    RateLimited:
+      description: Wiederholungen sind vorübergehend begrenzt.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            rateLimited:
+              $ref: '#/components/examples/RateLimited'
+    InternalServerError:
+      description: Unerwarteter Fehler ohne interne Details.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            internalError:
+              $ref: '#/components/examples/InternalServerError'
+
+  examples:
+    LiveHealth:
+      value:
+        status: ok
+        correlationId: cor_live_01JABCDEF123456789
+    ReadyHealth:
+      value:
+        status: ready
+        correlationId: cor_ready_01JABCDEF123456789
+    NotReadyHealth:
+      value:
+        status: not_ready
+        correlationId: cor_ready_01JABCDEF123456789
+    CreateAccountRequest:
+      value:
+        email: captain@example.test
+        password: correct-horse-battery-staple
+    AccountResponse:
+      value:
+        accountId: acc_01JABCDEF123456789
+        email: captain@example.test
+        createdAt: '2026-07-22T12:00:00Z'
+    SessionCredentialsRequest:
+      value:
+        email: captain@example.test
+        password: correct-horse-battery-staple
+    SessionCreatedResponse:
+      value:
+        sessionId: ses_01JABCDEF123456789
+        accountId: acc_01JABCDEF123456789
+        email: captain@example.test
+        token: galaxis_session_opaque_token
+        createdAt: '2026-07-22T12:00:00Z'
+        expiresAt: '2026-07-29T12:00:00Z'
+    SessionResponse:
+      value:
+        sessionId: ses_01JABCDEF123456789
+        accountId: acc_01JABCDEF123456789
+        email: captain@example.test
+        createdAt: '2026-07-22T12:00:00Z'
+        expiresAt: '2026-07-29T12:00:00Z'
+    InvalidRequest:
+      value:
+        error:
+          code: INVALID_REQUEST
+          message: Der Request ist ungültig.
+          correlationId: cor_01JABCDEF123456789
+          details:
+            - field: email
+              reason: INVALID_FORMAT
+          retryable: false
+    AccountRegistrationRejected:
+      value:
+        error:
+          code: ACCOUNT_REGISTRATION_REJECTED
+          message: Die Registrierung konnte nicht abgeschlossen werden.
+          correlationId: cor_01JABCDEF123456789
+          retryable: false
+    AuthenticationFailed:
+      value:
+        error:
+          code: AUTHENTICATION_FAILED
+          message: Die Zugangsdaten konnten nicht bestätigt werden.
+          correlationId: cor_01JABCDEF123456789
+          retryable: false
+    SessionInvalid:
+      value:
+        error:
+          code: SESSION_INVALID
+          message: Es ist keine gültige Session vorhanden.
+          correlationId: cor_01JABCDEF123456789
+          retryable: false
+    RateLimited:
+      value:
+        error:
+          code: RATE_LIMITED
+          message: Zu viele Anfragen; bitte später erneut versuchen.
+          correlationId: cor_01JABCDEF123456789
+          retryable: true
+    InternalServerError:
+      value:
+        error:
+          code: INTERNAL_ERROR
+          message: Ein unerwarteter Serverfehler ist aufgetreten.
+          correlationId: cor_01JABCDEF123456789
+          retryable: true
