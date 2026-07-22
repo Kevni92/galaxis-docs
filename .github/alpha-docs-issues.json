@@ -1,0 +1,92 @@
+[
+  {
+    "number": 114,
+    "title": "[ROADMAP] Server-first Implementierungsroadmap für Galaxis",
+    "milestone": null
+  },
+  {
+    "number": 115,
+    "title": "[A0][ROADMAP] Technisches Fundament",
+    "milestone": 16
+  },
+  {
+    "number": 116,
+    "title": "[A1][ROADMAP] Heimatplanet",
+    "milestone": 17
+  },
+  {
+    "number": 117,
+    "title": "[A2][ROADMAP] Schiffe und lokales Sternensystem",
+    "milestone": 18
+  },
+  {
+    "number": 118,
+    "title": "[A3][ROADMAP] Interstellare Erkundung",
+    "milestone": 19
+  },
+  {
+    "number": 119,
+    "title": "[A4][ROADMAP] Zweite Kolonie",
+    "milestone": 20
+  },
+  {
+    "number": 120,
+    "title": "[A5][ROADMAP] Bevölkerung und Arbeit",
+    "milestone": 21
+  },
+  {
+    "number": 121,
+    "title": "[A6][ROADMAP] Wirtschaft, Gebäude und Versorgung",
+    "milestone": 22
+  },
+  {
+    "number": 122,
+    "title": "[A7][ROADMAP] Forschung und Technologien",
+    "milestone": 23
+  },
+  {
+    "number": 123,
+    "title": "[A8][ROADMAP] Flottenlogistik und Reparatur",
+    "milestone": 24
+  },
+  {
+    "number": 124,
+    "title": "[A9][ROADMAP] Andere Reiche und Erstkontakt",
+    "milestone": 25
+  },
+  {
+    "number": 125,
+    "title": "[A10][ROADMAP] Diplomatie und Handel",
+    "milestone": 26
+  },
+  {
+    "number": 126,
+    "title": "[A11][ROADMAP] Konflikt und Raumkampf",
+    "milestone": 27
+  },
+  {
+    "number": 127,
+    "title": "[A12][ROADMAP] Ereignisse, Krise und Kampagnenabschluss",
+    "milestone": 28
+  },
+  {
+    "number": 128,
+    "title": "[A0][DOCS] OpenAPI-v1-Grundvertrag für Health und Authentifizierung definieren",
+    "milestone": 16
+  },
+  {
+    "number": 129,
+    "title": "[A1][DOCS] OpenAPI-v1-Schemas für Kampagne, Reich und Heimatkolonie definieren",
+    "milestone": 17
+  },
+  {
+    "number": 130,
+    "title": "[A2][DOCS] OpenAPI-v1-Schemas für Schiffe, Flotten und lokale Bewegung definieren",
+    "milestone": 18
+  },
+  {
+    "number": 131,
+    "title": "[A3][DOCS] OpenAPI-v1-Schemas für Galaxiekarte und Erkundung definieren",
+    "milestone": 19
+  }
+]
