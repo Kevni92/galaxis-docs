@@ -1,14 +1,9 @@
 # Wirtschaft
 
-Dieser Bereich beschreibt Erzeugung, Verbrauch und Verteilung von Ressourcen.
+Dieser Bereich beschreibt Güter, Produktion, Bedürfnisse, Versorgung, Transport, Handel und Haushalt.
 
-Geplante Dokumente:
+## Dokumente
 
-- Ressourcenmodell
-- Produktion und Verbrauch
-- Lagerung und Kapazitäten
-- Baukosten und Unterhalt
-- Handel
-- wirtschaftliche Spezialisierung
+- [Wirtschaft und Versorgung](wirtschaft-und-versorgung.md)
 
 Zurück zur [Dokumentationsübersicht](../README.md).
