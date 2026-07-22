@@ -2,12 +2,14 @@
 
 Dieser Bereich beschreibt den langfristigen Rahmen einer Partie.
 
-Geplante Dokumente:
+## Dokumente
+
+- [Kampagnenstruktur, Dauer, Sieg und Niederlage](kampagnenstruktur.md)
+
+## Geplante Dokumente
 
 - Kampagnenerzeugung
-- Kampagnendauer
-- Fortschrittsphasen
-- Sieg- und Niederlagebedingungen
+- konkrete Siegespfade und Wertung
 - Endgame und Krisen
 - Abschlussbericht
 - optionales Weiterspielen
