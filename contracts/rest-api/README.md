@@ -1,15 +1,17 @@
 # Fachliche REST-Anforderungen
 
-Dieser Bereich beschreibt die fachlichen Anforderungen an die REST-Schnittstelle zwischen Server und Clients.
+Dieser Bereich beschreibt den verbindlichen REST-Vertrag zwischen Server und Clients.
 
-Hier werden noch keine konkreten technischen Endpunkte festgelegt. Zunächst werden beschrieben:
+## Vertrag
 
-- benötigte fachliche Operationen,
-- erforderliche Eingaben,
-- erwartete Ergebnisse,
-- Berechtigungen,
-- Validierungs- und Fehlerfälle,
-- Sichtbarkeit von Informationen,
-- Anforderungen an Wiederholbarkeit und Nebenwirkungen.
+- [Galaxis REST API v1](galaxis-rest-v1.md)
 
-Die konkrete OpenAPI-Spezifikation wird später aus freigegebenen Fachverträgen abgeleitet.
+## Grundsätze
+
+- Der Server ist autoritativ.
+- Antworten werden nach Kampagnenzugriff und Reichswissen gefiltert.
+- Befehle sind idempotent und asynchron verfolgbar.
+- Zustände sind versioniert und inkrementell per REST synchronisierbar.
+- Die konkrete OpenAPI-Datei wird aus diesem Vertrag abgeleitet.
+
+Zurück zu den [fachlichen Verträgen](../README.md).
