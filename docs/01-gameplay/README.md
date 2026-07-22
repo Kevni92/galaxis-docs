@@ -2,11 +2,15 @@
 
 Dieser Bereich beschreibt das grundlegende Spielerlebnis.
 
-Geplante Dokumente:
+## Dokumente
 
-- Kern-Gameplay-Loop
-- typische Spielsitzung
-- Zeitmodell und Offline-Fortschritt
+- [Kern-Gameplay-Loop](core-loop.md)
+- [Typische Spielsitzung und Check-in-Rhythmus](spielsitzung-und-check-in-rhythmus.md)
+- [Zeitmodell, Geschwindigkeit und Pause](zeitmodell.md)
+- [Offline-Fortschritt und Abwesenheit](offline-fortschritt-und-abwesenheit.md)
+
+## Geplante Dokumente
+
 - Automatisierung und Delegation
 - Rückkehranreize
 - Informations- und Benachrichtigungssystem
