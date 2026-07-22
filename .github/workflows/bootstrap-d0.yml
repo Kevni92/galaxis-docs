@@ -1,0 +1,114 @@
+name: Bootstrap D0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/bootstrap-d0.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create D0 milestone and issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const milestoneTitle = 'D0 – Dokumentationsgrundlage';
+
+            const milestones = await github.paginate(github.rest.issues.listMilestones, {
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100
+            });
+
+            let milestone = milestones.find(item => item.title === milestoneTitle);
+            if (!milestone) {
+              const created = await github.rest.issues.createMilestone({
+                owner,
+                repo,
+                title: milestoneTitle,
+                description: 'Grundstruktur und verbindliche Konventionen für die fachliche Dokumentation von Galaxis. D0 ist abgeschlossen, wenn Menschen sowie Claude- und Codex-Agenten Inhalte eindeutig finden, einheitlich dokumentieren und offene Entscheidungen nachvollziehen können.'
+              });
+              milestone = created.data;
+            }
+
+            const issues = [
+              {
+                title: 'Repository-Grundstruktur erstellen',
+                body: `## Ziel\nEine klare, skalierbare Ordnerstruktur für die fachliche Dokumentation von Galaxis anlegen.\n\n## Umfang\n- Einstieg und Navigation im Root\n- Fachliche Themenbereiche unter \`docs/\`\n- Verträge unter \`contracts/\`\n- Designentscheidungen unter \`decisions/\`\n- Wiederverwendbare Vorlagen unter \`templates/\`\n\n## Akzeptanzkriterien\n- [ ] Alle vorgesehenen Hauptverzeichnisse existieren.\n- [ ] Jeder Hauptbereich besitzt eine kurze Navigation.\n- [ ] Leere Verzeichnisse werden nicht nur durch Platzhalter ohne Erklärung repräsentiert.\n- [ ] Benennung und Zweck der Verzeichnisse sind dokumentiert.`
+              },
+              {
+                title: 'AGENTS.md für Dokumentationsarbeit definieren',
+                body: `## Ziel\nVerbindliche Arbeitsregeln für Claude, Codex und andere KI-Agenten festlegen.\n\n## Inhalt\n- Zweck und Grenzen des Repositories\n- Navigation und Quellenpriorität\n- Regeln für neue und geänderte Dokumente\n- Umgang mit offenen Fragen und Widersprüchen\n- Verlinkung zwischen Fachkonzepten, Verträgen und Entscheidungen\n- Qualitäts- und Review-Anforderungen\n\n## Akzeptanzkriterien\n- [ ] Ein neuer Agent versteht ohne Zusatzkontext den Aufbau des Repositories.\n- [ ] Der Agent weiß, welche Dateien vor Änderungen gelesen werden müssen.\n- [ ] Der Agent darf ungeklärte Fachentscheidungen nicht eigenmächtig als verbindlich darstellen.\n- [ ] Regeln sind konkret, knapp und überprüfbar.`
+              },
+              {
+                title: 'CLAUDE.md als Verweis auf AGENTS.md erstellen',
+                body: `## Ziel\nClaude auf die zentrale Agentenanweisung verweisen, ohne Regeln doppelt zu pflegen.\n\n## Akzeptanzkriterien\n- [ ] \`CLAUDE.md\` liegt im Repository-Root.\n- [ ] Die Datei verweist ausschließlich auf \`AGENTS.md\`.\n- [ ] Es werden keine eigenständigen oder abweichenden Regeln dupliziert.`
+              },
+              {
+                title: 'Dokumentationskonventionen festlegen',
+                body: `## Ziel\nEinheitliche Regeln für Aufbau, Sprache, Status und Verlinkung aller fachlichen Dokumente definieren.\n\n## Zu klären\n- Dateinamen und Überschriften\n- Dokumentstatus wie Entwurf, Review und freigegeben\n- Pflichtabschnitte\n- interne Links und Referenzen\n- normative Formulierungen\n- Kennzeichnung von Beispielen, Annahmen und offenen Fragen\n- Änderungsnachvollziehbarkeit\n\n## Akzeptanzkriterien\n- [ ] Konventionen sind zentral dokumentiert.\n- [ ] Sie verhindern widersprüchliche Parallelbeschreibungen.\n- [ ] Verbindliche Regeln und unverbindliche Beispiele sind unterscheidbar.\n- [ ] Dokumente können anhand klarer Kriterien freigegeben werden.`
+              },
+              {
+                title: 'Vorlage für Spielmechaniken erstellen',
+                body: `## Ziel\nEine wiederverwendbare Vorlage für fachliche Spielmechaniken bereitstellen.\n\n## Pflichtinhalte der Vorlage\n- Zweck und Spielerwirkung\n- Voraussetzungen\n- Eingaben und Ausgaben\n- Ablauf und Regeln\n- Zustände und Übergänge\n- Wechselwirkungen\n- Grenzen und Sonderfälle\n- UI-relevante Informationen\n- serverrelevante Anforderungen\n- offene Fragen\n- Akzeptanzkriterien\n\n## Akzeptanzkriterien\n- [ ] Die Vorlage eignet sich für einfache und komplexe Mechaniken.\n- [ ] Fachlogik bleibt von konkreter Implementierung getrennt.\n- [ ] Client- und Serveranforderungen können daraus abgeleitet werden.`
+              },
+              {
+                title: 'Vorlage für Spielentitäten erstellen',
+                body: `## Ziel\nEine einheitliche Vorlage für Entitäten wie Reich, Planet, Sternensystem, Flotte oder Gebäude erstellen.\n\n## Pflichtinhalte der Vorlage\n- Definition und Verantwortung\n- Identität und Lebenszyklus\n- Eigenschaften\n- Beziehungen zu anderen Entitäten\n- erlaubte Zustände\n- fachliche Regeln und Invarianten\n- sichtbare und verborgene Informationen\n- mögliche Spielerinteraktionen\n- Ereignisse\n- offene Fragen\n\n## Akzeptanzkriterien\n- [ ] Entitäten werden ohne technische Klassenstruktur beschrieben.\n- [ ] Beziehungen und Verantwortungsgrenzen sind eindeutig.\n- [ ] Die Vorlage unterstützt spätere REST- und Datenmodellableitungen.`
+              },
+              {
+                title: 'Vorlage für Spielerbefehle erstellen',
+                body: `## Ziel\nEine verbindliche Vorlage für Befehle erstellen, die Spieler oder AI-Controller an ein Reich erteilen können.\n\n## Pflichtinhalte der Vorlage\n- fachlicher Name und Zweck\n- ausführender Akteur\n- Zielobjekt\n- Voraussetzungen und Berechtigungen\n- Parameter\n- Validierung\n- Kosten und Dauer\n- Auswirkungen\n- mögliche Fehlergründe\n- Abbruch und Wiederholung\n- sichtbare Rückmeldung\n\n## Akzeptanzkriterien\n- [ ] Befehle sind unabhängig vom späteren Client beschreibbar.\n- [ ] Mensch und AI können denselben fachlichen Befehl verwenden.\n- [ ] Servervalidierung kann eindeutig daraus abgeleitet werden.`
+              },
+              {
+                title: 'Vorlage für Designentscheidungen erstellen',
+                body: `## Ziel\nEine einfache ADR-ähnliche Vorlage für dauerhaft nachvollziehbare fachliche Designentscheidungen erstellen.\n\n## Pflichtinhalte der Vorlage\n- Status\n- Kontext\n- Entscheidung\n- betrachtete Alternativen\n- Begründung\n- positive und negative Folgen\n- betroffene Dokumente\n- Datum\n\n## Akzeptanzkriterien\n- [ ] Verworfen, angenommen und ersetzt sind als Status abbildbar.\n- [ ] Ersetzte Entscheidungen verweisen auf ihren Nachfolger.\n- [ ] Fachliche Entscheidungen werden nicht nur in Diskussionen oder Issues festgehalten.`
+              },
+              {
+                title: 'Glossar für verbindliche Spielbegriffe anlegen',
+                body: `## Ziel\nZentrale und eindeutige Begriffe für Galaxis definieren.\n\n## Anfangsumfang\n- Galaxie\n- Sternensystem\n- Himmelskörper\n- Planet\n- Kolonie\n- Reich\n- Flotte\n- Schiff\n- Spieler\n- Controller\n- Befehl\n- Ereignis\n- Kampagne\n\n## Akzeptanzkriterien\n- [ ] Jeder Begriff besitzt eine kurze eindeutige Definition.\n- [ ] Synonyme und nicht zu verwendende Begriffe sind angegeben, wenn nötig.\n- [ ] Dokumente verwenden die definierten Begriffe konsistent.\n- [ ] Das Glossar wird von der Hauptnavigation verlinkt.`
+              },
+              {
+                title: 'Zentrale Dokumentationsnavigation erstellen',
+                body: `## Ziel\nEinen Einstieg schaffen, über den Menschen und KI-Agenten alle relevanten Dokumentationsbereiche schnell erreichen.\n\n## Umfang\n- Projektzweck\n- Repository-Abgrenzung\n- Einstiegspunkte nach Themenbereich\n- Verweise auf Glossar, Konventionen, Vorlagen und Entscheidungen\n- Hinweis auf Dokumentstatus und Quellenpriorität\n\n## Akzeptanzkriterien\n- [ ] Das Root-README ist der eindeutige Einstiegspunkt.\n- [ ] Jeder Hauptbereich ist mit Zweckbeschreibung verlinkt.\n- [ ] Navigation funktioniert in beide Richtungen.\n- [ ] Ein neuer Agent findet ein gesuchtes Thema ohne Repository-weite Volltextsuche.`
+              }
+            ];
+
+            const existingIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100
+            });
+
+            for (const issue of issues) {
+              const existing = existingIssues.find(item => !item.pull_request && item.title === issue.title);
+              if (existing) {
+                if (existing.milestone?.number !== milestone.number) {
+                  await github.rest.issues.update({
+                    owner,
+                    repo,
+                    issue_number: existing.number,
+                    milestone: milestone.number
+                  });
+                }
+                continue;
+              }
+
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title: issue.title,
+                body: issue.body,
+                milestone: milestone.number
+              });
+            }
