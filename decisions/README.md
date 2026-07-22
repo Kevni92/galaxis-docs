@@ -26,4 +26,4 @@ Beispiel: `0001-serverautoritative-simulation.md`
 
 ## Index
 
-Noch keine Designentscheidungen vorhanden.
+- [0001 – Asynchrones Kampagnen- und Controller-Grundmodell](0001-asynchrones-kampagnen-und-controller-grundmodell.md) – angenommen
