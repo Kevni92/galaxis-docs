@@ -1,15 +1,9 @@
 # Flotten
 
-Dieser Bereich beschreibt Schiffe, Flotten und ihre Befehle.
+Dieser Bereich beschreibt Schiffe, Flotten, Befehle, Versorgung, Raumkampf, Schäden und Reparatur.
 
-Geplante Dokumente:
+## Dokumente
 
-- Schiff und Schiffstyp
-- Flotte als fachliche Entität
-- Flottenbildung
-- Bewegung und Reichweite
-- Flottenbefehle
-- Versorgung und Unterhalt
-- Raumkampf und Rückzug
+- [Flotten und Raumkampf](flotten-und-raumkampf.md)
 
 Zurück zur [Dokumentationsübersicht](../README.md).
