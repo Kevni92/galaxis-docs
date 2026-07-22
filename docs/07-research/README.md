@@ -1,14 +1,9 @@
 # Forschung
 
-Dieser Bereich beschreibt wissenschaftlichen Fortschritt.
+Dieser Bereich beschreibt Forschungsleistung, Technologien, Freischaltungen, Spezialisierung und Transfer.
 
-Geplante Dokumente:
+## Dokumente
 
-- Forschungsbereiche
-- Technologieauswahl
-- Forschungsfortschritt
-- Voraussetzungen und Freischaltungen
-- seltene Technologien
-- Forschungsereignisse
+- [Forschung und Technologien](forschung-und-technologien.md)
 
 Zurück zur [Dokumentationsübersicht](../README.md).
