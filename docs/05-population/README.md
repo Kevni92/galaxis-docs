@@ -1,14 +1,9 @@
 # Bevölkerung
 
-Dieser Bereich beschreibt die Bewohner der Reiche.
+Dieser Bereich beschreibt Bevölkerungsgruppen, Wachstum, Migration, Arbeitskräfte und Beschäftigung.
 
-Geplante Dokumente:
+## Dokumente
 
-- Bevölkerungsmodell
-- Spezies und Eigenschaften
-- Wachstum und Migration
-- Arbeit und Beschäftigung
-- Bedürfnisse und Zufriedenheit
-- soziale Gruppen und politische Auswirkungen
+- [Bevölkerung und Arbeit](bevoelkerung-und-arbeit.md)
 
 Zurück zur [Dokumentationsübersicht](../README.md).
