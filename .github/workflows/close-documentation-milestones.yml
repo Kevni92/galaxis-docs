@@ -1,5 +1,6 @@
 name: Close completed documentation milestones
 
+# trigger: 2
 on:
   push:
     branches: [main]
