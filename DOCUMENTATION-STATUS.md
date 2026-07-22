@@ -8,7 +8,7 @@ Datum: 2026-07-22
 
 Die fachliche Dokumentation des Galaxis-MVP ist vollständig genug, um konkrete Client-, Server-, Test- und OpenAPI-Arbeit abzuleiten. Die Freigabe bestätigt das fachliche Modell, nicht die Fertigstellung der Software.
 
-Numerische Balancingwerte, konkrete Inhaltskataloge und technische Bibliotheksentscheidungen bleiben Umsetzungsaufgaben. Sie dürfen die hier festgelegten Zustände, Verantwortlichkeiten und Invarianten nicht stillschweigend verändern.
+Die fachlichen Regeln sind freigegeben. Numerische Werte, Formeln und Zielkorridore besitzen nun eine erste [Balancing-Baseline v0.1](balancing/README.md). Diese Baseline ist für die erste Implementierung verbindlich, aber noch nicht durch vollständige Simulation oder Playtests validiert. Technische Bibliotheksentscheidungen bleiben Umsetzungsaufgaben.
 
 ## Quellenpriorität
 
@@ -17,8 +17,9 @@ Bei Widersprüchen gilt:
 1. angenommene Dateien unter [`decisions/`](decisions/README.md),
 2. freigegebene Verträge unter [`contracts/`](contracts/README.md),
 3. freigegebene Fachdokumente unter [`docs/`](docs/README.md),
-4. sonstige Projekttexte,
-5. Inhalte unter [`ideas/`](ideas/README.md) besitzen keine fachliche Wirkung.
+4. freigegebene oder als Baseline gekennzeichnete Werte unter [`balancing/`](balancing/README.md),
+5. sonstige Projekttexte,
+6. Inhalte unter [`ideas/`](ideas/README.md) besitzen keine fachliche Wirkung.
 
 ## Milestone-Matrix
 
@@ -67,15 +68,29 @@ Es wurden keine blockierenden Widersprüche zwischen den freigegebenen Dokumente
 
 ## Offene Fragen
 
-Offene Abschnitte in Fachdokumenten betreffen überwiegend:
+Offene Abschnitte und Folgearbeiten betreffen überwiegend:
 
-- numerische Balancingwerte,
-- konkrete Kataloge von Gütern, Gebäuden, Technologien, Schiffen und Ereignissen,
+- empirische Validierung und Feintuning der Balancing-Baseline,
+- konkrete produktive Kataloge von Gütern, Gebäuden, Technologien, Schiffen und Ereignissen,
 - technische Algorithmen und Bibliotheken,
 - genaue OpenAPI-Dateiaufteilung,
 - spätere Erweiterungen außerhalb des MVP.
 
 Diese Fragen sind keine offenen Grundsatzentscheidungen. Jede Umsetzung muss Werte und Kataloge in eigenen Issues dokumentieren und gegen die freigegebenen Akzeptanzkriterien testen.
+
+## Balancingstatus
+
+Der Balancingbereich definiert:
+
+- systemweite Pacing- und Stabilitätsziele,
+- Formeln, Einheiten und Rundungsregeln,
+- Fachbereichsbaselines,
+- Messgrößen und Qualitätsgrenzen,
+- ein versioniertes Datenformat,
+- Referenzszenarien S01 bis S05,
+- die Roadmap B1 bis B4.
+
+Aktueller Status: **Baseline v0.1**. Noch offen sind produktive Datenkataloge und Serverdaten, automatisierte Simulation, Playtestvalidierung und Release-Freeze. Diese Arbeiten werden in den Milestones B1 bis B4 geführt.
 
 ## Ableitbarkeit für Client
 
