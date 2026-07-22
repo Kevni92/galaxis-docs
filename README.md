@@ -8,6 +8,10 @@ Hier wird beschrieben, **wie das Spiel funktioniert**: Spielregeln, Entitäten, 
 
 Die fachliche MVP-Dokumentation ist [vollständig geprüft und freigegeben](DOCUMENTATION-STATUS.md).
 
+## Balancing
+
+Numerische Zielwerte, Formeln, Referenzszenarien und die Balancing-Roadmap liegen unter [`balancing/`](balancing/README.md). Die aktuelle Zahlenbasis ist **Baseline v0.1** und noch nicht durch vollständige Simulation oder Playtests validiert.
+
 ## Verbindliche Projektregeln
 
 Diese Dokumente müssen von Agenten in allen Galaxis-Repositories gelesen und befolgt werden:
