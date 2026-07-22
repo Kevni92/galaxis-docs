@@ -5,5 +5,6 @@
 3. Fachliche Änderungen verwenden die passende Vorlage unter `templates/`, die Begriffe aus `glossary.md` und aktualisieren die nächstgelegene Navigation.
 4. Spielregeln werden zuerst dokumentiert und freigegeben; danach entstehen getrennte Client- und Server-Issues gemäß `WORKFLOW.md`.
 5. Umsetzungs-Repositories müssen fachlich relevanten Quellcode knapp mit den maßgeblichen Docs verknüpfen und gemäß `TESTING.md` testen.
-6. Fachliche Änderungen erfolgen im Docs-Repository, nicht in der eingebundenen Submodule-Kopie.
-7. `CLAUDE.md` enthält keine eigenen Regeln und verweist nur auf diese Datei.
+6. Inhalte unter `ideas/` sind unverbindlich, keine fachliche Quelle und dürfen nur berücksichtigt werden, wenn eine Aufgabe ausdrücklich auf die jeweilige Idee verweist.
+7. Fachliche Änderungen erfolgen im Docs-Repository, nicht in der eingebundenen Submodule-Kopie.
+8. `CLAUDE.md` enthält keine eigenen Regeln und verweist nur auf diese Datei.
