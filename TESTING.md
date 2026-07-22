@@ -202,3 +202,36 @@ Ein Agent darf nicht behaupten, Tests ausgeführt zu haben, wenn dies nicht erfo
 | Nacht- und Release-Läufe | Laufzeit nach Umfang |
 
 Wird ein normaler kleiner PR regelmäßig langsamer, muss zuerst die Testauswahl oder CI-Struktur verbessert werden, statt die längere Laufzeit stillschweigend zu akzeptieren.
+
+## 11. Balancing- und Simulationstests
+
+Balancingänderungen benötigen risikobasierte Nachweise gemäß [`balancing/workflow.md`](balancing/workflow.md).
+
+### In jeder betroffenen Pull Request
+
+- Daten- und Schemavalidierung,
+- betroffene Formel-, Grenzwert- und Rundungstests,
+- deterministische Wiederholung mit festen Seeds,
+- Erhaltungstest für Bevölkerung, Güter, Schiffe oder andere konservierte Größen,
+- kleine betroffene Referenzszenarien,
+- Vorher-/Nachher-Vergleich mit identischen Eingaben,
+- Prüfung von Balancingversion, Quellen und Changelog.
+
+### Nach Merge oder nachts
+
+- Coverage-Seeds,
+- vollständige Strategieprofile,
+- Langzeit- und Offline-Nachholung,
+- Verteilungs- und Ausreißerbericht,
+- Performance großer Kampagnen,
+- Reproduction Seeds bekannter Fehler.
+
+### Release
+
+- alle Golden-, Coverage- und Reproduction-Seeds,
+- vollständige Referenzszenariomatrix,
+- Exploit- und Dominanzprüfung,
+- Savegame-, Migrations- und Hashkompatibilität,
+- eingefrorene Balancingversion mit Freigabebericht.
+
+Ein Mittelwert allein reicht nicht. Berichte enthalten mindestens Median, relevante Perzentile, Anteil außerhalb des Zielkorridors und die verwendeten Seeds. Eine Baseline darf nicht als validiert oder releasefähig bezeichnet werden, wenn die in [`balancing/metrics.md`](balancing/metrics.md) geforderten Nachweise fehlen.
