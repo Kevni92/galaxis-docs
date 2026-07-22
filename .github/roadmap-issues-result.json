@@ -1,0 +1,347 @@
+{
+  "total": 57,
+  "results": [
+    {
+      "title": "Spielvision von Galaxis definieren",
+      "number": 12,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Zielgruppe und gewünschtes Spielerlebnis definieren",
+      "number": 13,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Designprinzipien und Nicht-Ziele festlegen",
+      "number": 14,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Kern-Gameplay-Loop beschreiben",
+      "number": 15,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Typische Spielsitzung und Check-in-Rhythmus definieren",
+      "number": 16,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Zeitmodell, Geschwindigkeit und Pause definieren",
+      "number": 17,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Offline-Fortschritt und Abwesenheit definieren",
+      "number": 18,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Kampagnenstruktur, Dauer, Sieg und Niederlage definieren",
+      "number": 19,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "Spieler-, AI- und Reichsübernahmemodell definieren",
+      "number": 20,
+      "milestone": "D1 – Spielvision und Kernloop",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Galaxiestruktur und Generierung definieren",
+      "number": 21,
+      "milestone": "D2 – Galaxie und Sternensysteme",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Sternensysteme und Himmelskörper definieren",
+      "number": 22,
+      "milestone": "D2 – Galaxie und Sternensysteme",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Erkundung und Informationsstände definieren",
+      "number": 23,
+      "milestone": "D2 – Galaxie und Sternensysteme",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Bewegung und räumliche Verbindungen definieren",
+      "number": 24,
+      "milestone": "D2 – Galaxie und Sternensysteme",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Besitz und Kontrolle von Sternensystemen definieren",
+      "number": 25,
+      "milestone": "D2 – Galaxie und Sternensysteme",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Planetentypen und planetare Eigenschaften definieren",
+      "number": 26,
+      "milestone": "D3 – Planeten und Kolonien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Koloniegründung und Kolonielebenszyklus definieren",
+      "number": 27,
+      "milestone": "D3 – Planeten und Kolonien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Planetare Entwicklung und Kapazitäten definieren",
+      "number": 28,
+      "milestone": "D3 – Planeten und Kolonien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Bezirke, Gebäude und Bauvorgänge definieren",
+      "number": 29,
+      "milestone": "D3 – Planeten und Kolonien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Koloniespezialisierung und Verwaltung definieren",
+      "number": 30,
+      "milestone": "D3 – Planeten und Kolonien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Bevölkerungsmodell definieren",
+      "number": 31,
+      "milestone": "D4 – Bevölkerung und Wirtschaft",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Arbeitskräfte und Beschäftigung definieren",
+      "number": 32,
+      "milestone": "D4 – Bevölkerung und Wirtschaft",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Ressourcen und Produktionsketten definieren",
+      "number": 33,
+      "milestone": "D4 – Bevölkerung und Wirtschaft",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Bedürfnisse und Versorgung definieren",
+      "number": 34,
+      "milestone": "D4 – Bevölkerung und Wirtschaft",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Handel und Transport definieren",
+      "number": 35,
+      "milestone": "D4 – Bevölkerung und Wirtschaft",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Einnahmen, Ausgaben und Unterhalt definieren",
+      "number": 36,
+      "milestone": "D4 – Bevölkerung und Wirtschaft",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Forschungsressourcen und Fortschritt definieren",
+      "number": 37,
+      "milestone": "D5 – Forschung und Technologien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Technologieauswahl und Technologiestruktur definieren",
+      "number": 38,
+      "milestone": "D5 – Forschung und Technologien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Technologieeffekte und Freischaltungen definieren",
+      "number": 39,
+      "milestone": "D5 – Forschung und Technologien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Forschungsschwerpunkte und Spezialisierung definieren",
+      "number": 40,
+      "milestone": "D5 – Forschung und Technologien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Technologietransfer und Aufholen definieren",
+      "number": 41,
+      "milestone": "D5 – Forschung und Technologien",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Schiffe und Schiffstypen definieren",
+      "number": 42,
+      "milestone": "D6 – Flotten und Raumkampf",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Flottenbildung und Flottenverwaltung definieren",
+      "number": 43,
+      "milestone": "D6 – Flotten und Raumkampf",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Flottenbewegung und Flottenbefehle definieren",
+      "number": 44,
+      "milestone": "D6 – Flotten und Raumkampf",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Raumkampf definieren",
+      "number": 45,
+      "milestone": "D6 – Flotten und Raumkampf",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Schäden, Reparatur und Verluste definieren",
+      "number": 46,
+      "milestone": "D6 – Flotten und Raumkampf",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Militärische Versorgung und Reichweite definieren",
+      "number": 47,
+      "milestone": "D6 – Flotten und Raumkampf",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Reichsentität und Reichsverwaltung definieren",
+      "number": 48,
+      "milestone": "D7 – Reiche und Diplomatie",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Beziehungen und diplomatische Haltung definieren",
+      "number": 49,
+      "milestone": "D7 – Reiche und Diplomatie",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Diplomatische Aktionen definieren",
+      "number": 50,
+      "milestone": "D7 – Reiche und Diplomatie",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Verträge und Bündnisse definieren",
+      "number": 51,
+      "milestone": "D7 – Reiche und Diplomatie",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Konflikte, Kriegsziele und Frieden definieren",
+      "number": 52,
+      "milestone": "D7 – Reiche und Diplomatie",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Controller, AI und Spielerübernahme weiter detaillieren",
+      "number": 53,
+      "milestone": "D7 – Reiche und Diplomatie",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Ereignissystem definieren",
+      "number": 54,
+      "milestone": "D8 – Ereignisse, Krisen und Endgame",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Entscheidungen und Ereignisfolgen definieren",
+      "number": 55,
+      "milestone": "D8 – Ereignisse, Krisen und Endgame",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Anomalien und besondere Entdeckungen definieren",
+      "number": 56,
+      "milestone": "D8 – Ereignisse, Krisen und Endgame",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Regionale und galaktische Krisen definieren",
+      "number": 57,
+      "milestone": "D8 – Ereignisse, Krisen und Endgame",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Endgame, Sieg und Niederlage detaillieren",
+      "number": 58,
+      "milestone": "D8 – Ereignisse, Krisen und Endgame",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] API-Grundprinzipien und Ressourcenmodell definieren",
+      "number": 59,
+      "milestone": "D9 – REST-Schnittstellenanforderungen",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Authentifizierung, Sessions und Kampagnenzugriff definieren",
+      "number": 60,
+      "milestone": "D9 – REST-Schnittstellenanforderungen",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Spielzustandsabfragen definieren",
+      "number": 61,
+      "milestone": "D9 – REST-Schnittstellenanforderungen",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Befehlsübermittlung und asynchrone Ergebnisse definieren",
+      "number": 62,
+      "milestone": "D9 – REST-Schnittstellenanforderungen",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Fehlerformat und Aktualisierungsmechanismus definieren",
+      "number": 63,
+      "milestone": "D9 – REST-Schnittstellenanforderungen",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Vollständigkeit aller Fachbereiche prüfen",
+      "number": 64,
+      "milestone": "D10 – Fachliche Dokumentation vollständig",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Widersprüche und Quellenpriorität prüfen",
+      "number": 65,
+      "milestone": "D10 – Fachliche Dokumentation vollständig",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Offene Fragen und Entscheidungsbedarf prüfen",
+      "number": 66,
+      "milestone": "D10 – Fachliche Dokumentation vollständig",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] Ableitbarkeit für Client, Server und Tests prüfen",
+      "number": 67,
+      "milestone": "D10 – Fachliche Dokumentation vollständig",
+      "status": "created"
+    },
+    {
+      "title": "[Leit-Issue] REST-Verträge und finale MVP-Freigabe prüfen",
+      "number": 68,
+      "milestone": "D10 – Fachliche Dokumentation vollständig",
+      "status": "created"
+    }
+  ]
+}
