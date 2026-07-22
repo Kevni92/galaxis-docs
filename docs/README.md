@@ -2,6 +2,10 @@
 
 Unter `docs/` wird beschrieben, wie Galaxis aus Sicht des Spiels funktioniert.
 
+## Freigabestatus
+
+Der vollständige MVP-Status und die Traceability stehen in [`DOCUMENTATION-STATUS.md`](../DOCUMENTATION-STATUS.md).
+
 ## Struktur
 
 | Ordner | Zweck |
