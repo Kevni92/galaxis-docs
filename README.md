@@ -4,6 +4,10 @@ Dieses Repository ist die verbindliche fachliche Quelle für das Spiel **Galaxis
 
 Hier wird beschrieben, **wie das Spiel funktioniert**: Spielregeln, Entitäten, Befehle, Zustände, Wechselwirkungen und fachliche Anforderungen. Konkreter Client- oder Servercode gehört nicht in dieses Repository.
 
+## Dokumentationsstatus
+
+Die fachliche MVP-Dokumentation ist [vollständig geprüft und freigegeben](DOCUMENTATION-STATUS.md).
+
 ## Verbindliche Projektregeln
 
 Diese Dokumente müssen von Agenten in allen Galaxis-Repositories gelesen und befolgt werden:
