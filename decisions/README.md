@@ -27,3 +27,4 @@ NNNN-kurzer-titel.md
 - [0001 – Asynchrones Kampagnen- und Controller-Grundmodell](0001-asynchrones-kampagnen-und-controller-grundmodell.md) – angenommen
 - [0002 – Deterministische Graph-Galaxie mit reichsspezifischem Wissen](0002-deterministische-graph-galaxie.md) – angenommen
 - [0003 – MVP-Simulations- und Schnittstellenmodell](0003-mvp-simulations-und-schnittstellenmodell.md) – angenommen
+- [0004 – Versionierte Balancing-Schicht](0004-versionierte-balancing-schicht.md) – angenommen
