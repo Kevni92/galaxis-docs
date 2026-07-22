@@ -1,0 +1,91 @@
+name: Balancing-Änderung
+description: Messbare Änderung an Werten, Formeln, Katalogen oder Pacingzielen
+title: "[BAL] "
+labels:
+  - balancing
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Balancing verändert Zahlen und Zielkorridore, aber keine fachlichen Zustände, Befehle oder Invarianten. Bei einer neuen Spielregel zuerst ein fachliches Docs-Issue erstellen.
+
+  - type: input
+    id: source
+    attributes:
+      label: Fachliche und Balancing-Quelle
+      description: Links oder Pfade zu Fachdokument, Balancingdokument und relevanter Entscheidung.
+      placeholder: balancing/domains/... und docs/...
+    validations:
+      required: true
+
+  - type: textarea
+    id: observation
+    attributes:
+      label: Beobachtung
+      description: Welches messbare oder im Playtest beobachtete Verhalten ist problematisch?
+    validations:
+      required: true
+
+  - type: textarea
+    id: player-impact
+    attributes:
+      label: Spielerwirkung
+      description: Welche Entscheidung, Wartezeit, Strategie oder Frustration ist betroffen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Ausgangswerte oder aktuelle Formel
+      description: Parameterkennungen, Werte, Einheiten und Balancingversion.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: target
+    attributes:
+      label: Ziel und Metriken
+      description: Zielkorridor, Hauptmetrik und erlaubte Nebenwirkungen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenarios
+    attributes:
+      label: Referenzszenarien und Seeds
+      description: Betroffene Szenario-IDs und feste Vergleichsseeds.
+    validations:
+      required: true
+
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Änderungshypothese
+      description: Welche Werte sollen sich warum ändern und welche Wirkung wird erwartet?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: tests
+    attributes:
+      label: Geplante Nachweise
+      options:
+        - label: Schema- und Datenvalidierung
+        - label: Unit- und Grenzwerttests
+        - label: Determinismusprüfung
+        - label: Erhaltungstest, sofern relevant
+        - label: Vorher-/Nachher-Lauf mit identischen Seeds
+        - label: Strategiematrix
+        - label: Playtest, falls subjektive Wirkung betroffen ist
+        - label: Savegame- und Migrationsprüfung
+        - label: Changelog- und Versionsupdate
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Kompatibilität und Rollback
+      description: Wirkung auf bestehende Kampagnen, notwendige Migration und Rücknahmeplan.
+    validations:
+      required: true
