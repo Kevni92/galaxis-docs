@@ -1,5 +1,6 @@
 name: Finalize balancing documentation
 
+# trigger 2
 on:
   push:
     branches: [main]
