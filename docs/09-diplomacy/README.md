@@ -1,15 +1,9 @@
 # Diplomatie
 
-Dieser Bereich beschreibt Beziehungen zwischen Reichen.
+Dieser Bereich beschreibt Kontakte, Beziehungen, diplomatische Aktionen, Verträge, Bündnisse, Krieg und Frieden.
 
-Geplante Dokumente:
+## Dokumente
 
-- erster Kontakt
-- diplomatische Beziehungen
-- Verträge und Abkommen
-- Handel zwischen Reichen
-- Ansprüche und Konflikte
-- Kriegserklärung und Kriegsziele
-- Frieden und Unterwerfung
+- [Diplomatie, Verträge und Krieg](diplomatie-und-krieg.md)
 
 Zurück zur [Dokumentationsübersicht](../README.md).
