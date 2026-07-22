@@ -5,6 +5,7 @@ Dieser Bereich beschreibt den verbindlichen REST-Vertrag zwischen Server und Cli
 ## Vertrag
 
 - [Galaxis REST API v1](galaxis-rest-v1.md)
+- [Maschinenlesbare OpenAPI-v1-Spezifikation](galaxis-rest-v1.yaml)
 
 ## Grundsätze
 
