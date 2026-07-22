@@ -1,6 +1,6 @@
 # Erkundung und Informationsstände
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

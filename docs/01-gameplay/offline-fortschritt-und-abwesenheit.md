@@ -1,6 +1,6 @@
 # Offline-Fortschritt und Abwesenheit
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

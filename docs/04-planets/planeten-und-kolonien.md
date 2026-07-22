@@ -1,6 +1,6 @@
 # Planeten und Kolonien
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

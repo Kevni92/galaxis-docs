@@ -1,6 +1,6 @@
 # Kern-Gameplay-Loop
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

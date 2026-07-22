@@ -1,6 +1,6 @@
 # Spielvision von Galaxis
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

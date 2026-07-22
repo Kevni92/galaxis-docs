@@ -1,6 +1,6 @@
 # Bevölkerung und Arbeit
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

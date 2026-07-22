@@ -1,6 +1,6 @@
 # Spieler-, AI- und Reichsübernahmemodell
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

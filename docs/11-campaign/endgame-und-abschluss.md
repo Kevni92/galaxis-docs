@@ -1,6 +1,6 @@
 # Endgame und Kampagnenabschluss
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

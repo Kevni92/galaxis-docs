@@ -1,6 +1,6 @@
 # Galaxis REST API v1 – Fachlicher Vertrag
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

@@ -1,6 +1,6 @@
 # Forschung und Technologien
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

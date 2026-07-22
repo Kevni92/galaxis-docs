@@ -1,6 +1,6 @@
 # Kampagnenstruktur, Dauer, Sieg und Niederlage
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

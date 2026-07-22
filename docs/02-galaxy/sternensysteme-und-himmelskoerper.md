@@ -1,6 +1,6 @@
 # Sternensysteme und Himmelskörper
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

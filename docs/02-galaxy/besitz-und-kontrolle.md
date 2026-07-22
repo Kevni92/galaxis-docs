@@ -1,6 +1,6 @@
 # Besitz und Kontrolle von Sternensystemen
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

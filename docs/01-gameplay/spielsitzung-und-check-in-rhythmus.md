@@ -1,6 +1,6 @@
 # Typische Spielsitzung und Check-in-Rhythmus
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

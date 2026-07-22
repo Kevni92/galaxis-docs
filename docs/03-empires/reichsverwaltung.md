@@ -1,6 +1,6 @@
 # Reichsentität und Reichsverwaltung
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

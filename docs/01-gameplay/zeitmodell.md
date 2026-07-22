@@ -1,6 +1,6 @@
 # Zeitmodell, Geschwindigkeit und Pause
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

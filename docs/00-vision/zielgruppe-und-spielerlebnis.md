@@ -1,6 +1,6 @@
 # Zielgruppe und gewünschtes Spielerlebnis
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

@@ -1,6 +1,6 @@
 # Bewegung und räumliche Verbindungen
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

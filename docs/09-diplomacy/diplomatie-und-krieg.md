@@ -1,6 +1,6 @@
 # Diplomatie, Verträge und Krieg
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

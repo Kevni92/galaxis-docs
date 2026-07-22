@@ -1,6 +1,6 @@
 # Designprinzipien und Nicht-Ziele
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

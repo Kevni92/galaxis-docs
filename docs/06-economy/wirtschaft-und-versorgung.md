@@ -1,6 +1,6 @@
 # Wirtschaft und Versorgung
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 

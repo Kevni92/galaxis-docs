@@ -1,6 +1,6 @@
 # Ereignisse, Anomalien und Krisen
 
-Status: Review
+Status: Freigegeben
 
 ## Zweck
 
