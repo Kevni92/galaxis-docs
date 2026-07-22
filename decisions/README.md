@@ -8,8 +8,6 @@ Dieser Ordner enthält dauerhaft nachvollziehbare fachliche Designentscheidungen
 NNNN-kurzer-titel.md
 ```
 
-Beispiel: `0001-serverautoritative-simulation.md`
-
 ## Status
 
 - vorgeschlagen,
@@ -28,3 +26,4 @@ Beispiel: `0001-serverautoritative-simulation.md`
 
 - [0001 – Asynchrones Kampagnen- und Controller-Grundmodell](0001-asynchrones-kampagnen-und-controller-grundmodell.md) – angenommen
 - [0002 – Deterministische Graph-Galaxie mit reichsspezifischem Wissen](0002-deterministische-graph-galaxie.md) – angenommen
+- [0003 – MVP-Simulations- und Schnittstellenmodell](0003-mvp-simulations-und-schnittstellenmodell.md) – angenommen
