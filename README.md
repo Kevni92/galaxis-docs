@@ -25,10 +25,11 @@ Numerische Zielwerte, Formeln, Referenzszenarien und die Balancing-Roadmap liege
 
 Diese Dokumente müssen von Agenten in allen Galaxis-Repositories gelesen und befolgt werden:
 
-1. [Arbeitsworkflow](WORKFLOW.md) – vom Fachkonzept bis zum Merge
-2. [Teststrategie](TESTING.md) – schnelle, risikobasierte Tests und CI-Stufen
-3. [Quellcodedokumentation](SOURCE-CODE.md) – kurze Kommentare, Fachverweise und Modulnavigation
-4. [Arbeitsregeln für KI-Agenten](AGENTS.md)
+1. [Arbeitsregeln für KI-Agenten](AGENTS.md)
+2. [Arbeitsworkflow](WORKFLOW.md) – vom Fachkonzept bis zum Merge
+3. [Kommunikation einer Agenten-Session](AGENT-COMMUNICATION.md) – Aufgabenverständnis, Abschlussbericht und nächste Empfehlung
+4. [Teststrategie](TESTING.md) – schnelle, risikobasierte Tests und CI-Stufen
+5. [Quellcodedokumentation](SOURCE-CODE.md) – kurze Kommentare, Fachverweise und Modulnavigation
 
 ## Unverbindliche Ideen
 
