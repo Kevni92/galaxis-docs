@@ -27,3 +27,4 @@ Beispiel: `0001-serverautoritative-simulation.md`
 ## Index
 
 - [0001 – Asynchrones Kampagnen- und Controller-Grundmodell](0001-asynchrones-kampagnen-und-controller-grundmodell.md) – angenommen
+- [0002 – Deterministische Graph-Galaxie mit reichsspezifischem Wissen](0002-deterministische-graph-galaxie.md) – angenommen
