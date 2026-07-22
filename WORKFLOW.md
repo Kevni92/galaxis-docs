@@ -185,6 +185,41 @@ PRs sollen eine klar abgegrenzte Änderung enthalten. Große Features werden auf
 
 Eine PR darf nicht mehrere unabhängige Features nur deshalb zusammenfassen, weil sie von derselben Agent-Session bearbeitet werden.
 
+#### Verbindlicher Branch- und PR-Ablauf
+
+Für alle Arbeits- und Agenten-Sessions gilt:
+
+1. Vor jedem neuen Issue wird der aktuelle Stand geladen:
+
+   ```bash
+   git fetch origin --prune
+   git switch main
+   git pull --ff-only origin main
+   git status
+   ```
+
+2. Der Arbeitsbaum muss sauber sein. Ein neuer Issue-Branch wird ausschließlich vom aktuellen `origin/main` erstellt.
+3. Jeder Pull Request verwendet ausschließlich `main` als Base.
+4. Ein Feature- oder Issue-Branch darf niemals Base eines weiteren Feature-PRs sein.
+5. Gestapelte Pull Requests und das Mergen eines Feature-Branches in einen anderen Feature-Branch sind verboten, außer der Nutzer ordnet dies für einen konkreten Fall ausdrücklich an.
+6. Das nächste Issue darf erst begonnen werden, wenn der vorherige PR nach `main` gemergt, die erforderliche CI erfolgreich und das lokale `main` erneut aktualisiert wurde.
+7. Ist der vorherige PR noch offen oder nicht nach `main` gemergt, stoppt der Agent. Er setzt die nächste Aufgabe weder auf demselben Branch noch auf einem davon abgeleiteten Branch fort.
+8. Ein PR wird ausdrücklich mit `main` als Base erstellt, beispielsweise:
+
+   ```bash
+   gh pr create --base main --head <BRANCH>
+   ```
+
+9. Nach dem Erstellen wird die Base geprüft:
+
+   ```bash
+   gh pr view <PR-NUMMER> --json baseRefName,headRefName
+   ```
+
+   `baseRefName` muss exakt `main` sein. Andernfalls wird nicht weitergearbeitet, bis der PR korrigiert ist.
+10. Nach erfolgreichem Merge darf der Feature-Branch erst gelöscht werden, wenn seine relevanten Änderungen nachweislich in `origin/main` enthalten sind und kein offener PR den Branch mehr verwendet.
+11. Bestehende versehentlich gestapelte Branches werden ohne Umschreiben von `main` repariert: Ein neuer Reparaturbranch startet vom aktuellen `origin/main` und übernimmt ausschließlich die fehlenden normalen Commits. Merge-Commits der alten Stapelkette werden nicht übernommen.
+
 ### Schritt 9: Testen und Review
 
 Jede PR folgt der verbindlichen Strategie aus [`TESTING.md`](TESTING.md).
@@ -229,10 +264,11 @@ Ein Agent muss vor der Arbeit:
 2. dieses Dokument lesen,
 3. [`TESTING.md`](TESTING.md) lesen,
 4. Repository und aktuelle Aufgabe identifizieren,
-5. maßgebliche Docs-Dateien und Entscheidungen lesen,
-6. vorhandene Modul-READMEs und Code-Navigationen lesen,
-7. Abhängigkeiten und betroffene Tests bestimmen,
-8. die Änderung auf den kleinsten sinnvollen Umfang begrenzen.
+5. Git-Ausgangslage gemäß dem verbindlichen Branch- und PR-Ablauf prüfen,
+6. maßgebliche Docs-Dateien und Entscheidungen lesen,
+7. vorhandene Modul-READMEs und Code-Navigationen lesen,
+8. Abhängigkeiten und betroffene Tests bestimmen,
+9. die Änderung auf den kleinsten sinnvollen Umfang begrenzen.
 
 ## 6. Anforderungen an Client- und Serverstruktur
 
@@ -258,7 +294,8 @@ Eine Aufgabe ist abgeschlossen, wenn:
 - bestehende Tests erfolgreich sind,
 - Modulnavigation und Dokumentation aktualisiert sind,
 - keine bekannten relevanten Fehler verschwiegen werden,
-- das Issue und die PR die Feature-ID und Quellen enthalten.
+- das Issue und die PR die Feature-ID und Quellen enthalten,
+- der PR nach `main` gerichtet ist und kein Folge-Issue auf seinem Feature-Branch begonnen wurde.
 
 ## 8. Rückfluss von Erkenntnissen
 
