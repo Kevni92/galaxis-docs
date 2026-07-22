@@ -1,15 +1,14 @@
-# Planeten und Kolonien
+# Planeten
 
-Dieser Bereich beschreibt nutzbare Himmelskörper und ihre Entwicklung.
+Dieser Bereich beschreibt Planeten, Kolonien, Entwicklung, Bezirke, Gebäude und Verwaltung.
 
-Geplante Dokumente:
+## Dokumente
 
-- Planeteneigenschaften
-- Kolonisierung
-- Kolonien
-- Bezirke und Bauflächen
-- Gebäude
-- Spezialisierung
-- planetare Zustände und Ereignisse
+- [Planeten und Kolonien](planeten-und-kolonien.md)
+
+## Folgeabhängigkeiten
+
+- Bevölkerung und Arbeit stehen unter [Bevölkerung](../05-population/README.md).
+- Produktion und Versorgung stehen unter [Wirtschaft](../06-economy/README.md).
 
 Zurück zur [Dokumentationsübersicht](../README.md).
