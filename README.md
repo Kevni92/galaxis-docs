@@ -8,6 +8,15 @@ Hier wird beschrieben, **wie das Spiel funktioniert**: Spielregeln, Entitäten, 
 
 Die fachliche MVP-Dokumentation ist [vollständig geprüft und freigegeben](DOCUMENTATION-STATUS.md).
 
+## Implementierungsroadmap
+
+Die projektübergreifende, server-first ausgerichtete Umsetzung ist unter [`roadmap/`](roadmap/README.md) beschrieben.
+
+- [A0 bis A12 – vollständige Implementierungsroadmap](roadmap/IMPLEMENTATION-ROADMAP.md)
+- [A0 lokal mit Codex umsetzen](roadmap/CODEX-A0.md)
+
+Die Roadmap verbindet die Milestones und Issues in `galaxis-docs`, `galaxis-server` und `galaxis-client`. Jede Alpha endet mit einem kleinen spielbaren vertikalen Schnitt.
+
 ## Balancing
 
 Numerische Zielwerte, Formeln, Referenzszenarien und die Balancing-Roadmap liegen unter [`balancing/`](balancing/README.md). Die aktuelle Zahlenbasis ist **Baseline v0.1** und noch nicht durch vollständige Simulation oder Playtests validiert.
