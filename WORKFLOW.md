@@ -23,6 +23,7 @@ Enthält:
 - sichtbare und verborgene Informationen,
 - fachliche REST-Verträge,
 - Designentscheidungen,
+- versionierte Balancingziele, Formeln und Referenzszenarien,
 - projektübergreifenden Arbeits- und Testprozess.
 
 Das Repository enthält keinen produktiven Client- oder Servercode.
@@ -53,13 +54,14 @@ Der Client darf keine serverseitigen Spielregeln als eigene verbindliche Wahrhei
 ## 2. Verbindliche Quellenreihenfolge
 
 1. angenommene Designentscheidung unter `decisions/`,
-2. freigegebenes Fachdokument unter `docs/`,
-3. freigegebener Vertrag unter `contracts/`,
-4. Dokument im Review,
-5. Entwurf,
-6. Issue, PR-Kommentar oder Chat.
+2. freigegebener Vertrag unter `contracts/`,
+3. freigegebenes Fachdokument unter `docs/`,
+4. freigegebene oder als Baseline gekennzeichnete Balancingquelle unter `balancing/`,
+5. Dokument im Review,
+6. Entwurf,
+7. Issue, PR-Kommentar oder Chat.
 
-Ein Issue ersetzt keine freigegebene Fachregel.
+Ein Issue ersetzt keine freigegebene Fachregel. Inhalte unter `ideas/` besitzen keine fachliche Wirkung. Balancingquellen dürfen höher priorisierte Fachregeln nicht verändern.
 
 ## 3. Lebenszyklus eines Features
 
@@ -270,3 +272,21 @@ Stattdessen:
 4. anschließend Umsetzung anpassen.
 
 So bleibt `galaxis-docs` die langfristige gemeinsame Wahrheit.
+
+## 9. Balancing-Lebenszyklus
+
+Balancingänderungen folgen zusätzlich dem verbindlichen Ablauf aus [`balancing/workflow.md`](balancing/workflow.md).
+
+Dabei gilt:
+
+1. beobachtetes Verhalten und Spielerwirkung beschreiben,
+2. Ausgangsmetriken mit Version, Szenario und Seeds sichern,
+3. Änderungshypothese und Zielkorridor formulieren,
+4. Werte in versionierten Serverdaten ändern,
+5. Formeln, Erhaltung, Determinismus und Referenzszenarien testen,
+6. Vorher-/Nachher-Bericht erstellen,
+7. Playtestbedarf bewerten,
+8. Balancingstatus, Version und Changelog aktualisieren,
+9. Savegame-, Migrations- und Rollbackwirkung dokumentieren.
+
+Eine Balancingänderung, die eine neue Spielregel, Berechtigung, Information oder Zustandsbedeutung benötigt, kehrt vor der Umsetzung zum fachlichen Docs-Workflow zurück.
