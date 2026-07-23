@@ -7,6 +7,7 @@ Verträge übersetzen freigegebene Spielregeln in eindeutige, implementierungsun
 - [Befehle](commands/README.md)
 - [Spielzustand](game-state/README.md)
 - [REST-Schnittstelle](rest-api/README.md)
+- [UI-Interaktionen](ui/README.md)
 
 ## Regeln
 
@@ -14,3 +15,4 @@ Verträge übersetzen freigegebene Spielregeln in eindeutige, implementierungsun
 - Jeder Vertrag verweist auf seine fachliche Grundlage unter `docs/`.
 - Verträge beschreiben Bedeutung, Eingaben, Ausgaben, Validierung und Fehlerfälle.
 - Konkrete Programmiersprachen, Klassen oder Frameworks gehören nicht hierher.
+- UI-Verträge dürfen keine clientseitige Fachlogik oder zusätzliche Informationsquelle erzeugen.

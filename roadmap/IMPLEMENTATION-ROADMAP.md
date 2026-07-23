@@ -2,7 +2,7 @@
 
 Status: Verbindliche Implementierungsplanung
 
-Datum: 2026-07-22
+Datum: 2026-07-23
 
 Zentrales GitHub-Issue: #114
 
@@ -10,7 +10,18 @@ Zentrales GitHub-Issue: #114
 
 Galaxis wird zunächst vom Server aus aufgebaut. Die fachliche Simulation, Persistenz, Berechtigungen, Balancingdaten und REST-Verträge entstehen vor der jeweils dazugehörigen Benutzeroberfläche.
 
-**Server-first bedeutet nicht clientlos.** Jede Alpha liefert einen kleinen vertikalen Schnitt, der über den echten Server bedienbar und als End-to-End-Ablauf testbar ist. Der Client wird zunächst funktional und bewusst schlicht umgesetzt. Visuelle Qualität und Bedienkomfort werden spiralförmig ausgebaut, sobald die zugrunde liegenden Abläufe stabil sind.
+**Server-first bedeutet nicht clientlos.** Jede Alpha liefert einen kleinen vertikalen Schnitt, der über den echten Server bedienbar und als End-to-End-Ablauf testbar ist.
+
+Die visuelle Raumansicht wird nicht pro Alpha als Wegwerfoberfläche neu gebaut. Ab A1 gilt die verbindliche Game Shell aus Decision 0007:
+
+- 3D-Sternensystemansicht als permanente Arbeitsfläche,
+- fachlich autoritative lokale XY-Geometrie,
+- Galaxieansicht als zweite räumliche Ebene,
+- Topbar, linkes Zugriffsmenü und rechter Outliner,
+- einheitliche modale Fenster für Objekt- und Fachdetails,
+- Shortcuts, Lokalisierung und Begriffskatalog als gemeinsame Grundlage.
+
+Der jeweilige Alpha-Slice implementiert nur die benötigten Komponenten und Befehle, aber kein abweichendes UX-Grundmodell.
 
 Die Reihenfolge innerhalb einer Alpha lautet grundsätzlich:
 
@@ -25,25 +36,28 @@ Applicationfälle und REST-Adapter
         ↓
 Headless-/Integrationsszenario
         ↓
-minimaler Clientablauf
+minimaler Clientablauf auf gemeinsamer Game Shell
         ↓
 End-to-End-Demo und Alpha-Gate
 ```
 
 ## 2. Verbindliche Prinzipien
 
-1. Der Server ist für Zustand, Zeit, Wissen, Zufall, Berechtigungen und Validierung autoritativ.
+1. Der Server ist für Zustand, Zeit, Wissen, Zufall, Berechtigungen, Positionen, Kontextaktionen und Validierung autoritativ.
 2. Spieler und AI verwenden später dieselben fachlichen Befehle.
-3. Domaincode hängt nicht von Fastify, TypeBox, JSON, PostgreSQL, Kysely, Node-I/O oder UI ab.
+3. Domaincode hängt nicht von Fastify, TypeBox, JSON, PostgreSQL, Kysely, Node-I/O, Three.js oder UI ab.
 4. Jede Alpha enthält Persistenz, Fehlerzustände und Tests; diese werden nicht auf einen späteren Aufräummilestone verschoben.
 5. OpenAPI wird vor unabhängiger Client-/Serverarbeit konkretisiert.
 6. Balancingwerte liegen versioniert und serverseitig vor.
 7. Jede Alpha besitzt genau eine sichtbare Abnahmedemo.
 8. Eine spätere Alpha darf bereits intern vorbereitete Daten besitzen, diese aber nicht unkontrolliert an den Client freigeben.
-9. Keine Alpha beginnt mit einer großen UI-Neugestaltung. Erst der funktionale Schnitt, danach spiralförmige Verbesserung.
+9. Die Game Shell und das Designsystem werden spiralförmig erweitert, nicht pro Feature neu erfunden.
 10. Änderungen bleiben kleine PRs mit einer klaren Feature-ID.
 11. TypeScript-Typen ersetzen keine Laufzeitvalidierung externer Daten.
 12. Die gemeinsame Sprache von Client und Server erlaubt keine gemeinsame clientseitige Fachlogik; der Server bleibt die einzige autoritative Wahrheit.
+13. Fachliche lokale Bewegung verwendet ausschließlich serverseitige XY-Koordinaten. Visuelle 3D-Höhe, Meshgröße und Animation sind präsentational.
+14. Planet-, Stern-, Kolonie- und Flottendetails öffnen im gemeinsamen modalen Fenstersystem; Vollbild bleibt begründeten Ausnahmen vorbehalten.
+15. Alle sichtbaren Texte stammen aus Sprachdateien und erklärungsbedürftige Fachbegriffe aus dem Begriffskatalog.
 
 ## 3. Repository- und GitHub-Modell
 
@@ -53,7 +67,8 @@ Enthält:
 
 - Alpha-Umbrellas und projektübergreifende Abnahmegates,
 - Fachquellen und Designentscheidungen,
-- OpenAPI-Verträge,
+- OpenAPI- und UI-Verträge,
+- UX-, Fenster-, Rendering-, Lokalisierungs- und Begriffskataloggrundlagen,
 - Balancingziele und Referenzszenarien,
 - diese Roadmap.
 
@@ -66,6 +81,7 @@ Enthält:
 - Fastify-REST-Adapter,
 - Accounts und Sessions,
 - Simulation, Zeit und Zufall,
+- lokale XY-Positionen, Bewegung, Kontextaktionen und Kampfzustände,
 - Balancingdaten und Headless-Szenarien,
 - serverseitige Tests.
 
@@ -75,30 +91,32 @@ Enthält:
 
 - Desktop-Webclient,
 - OpenAPI-basierte Typen und REST-Anbindung,
-- Ansichten und Interaktionen,
-- clientseitige Zustände ohne eigene Spielregeln,
+- Vue-basierte Game Shell und modales Fenstersystem,
+- gekapselte Three.js-Raumdarstellung,
+- YAML-Lokalisierung und Begriffskatalog,
+- clientseitige Zustände für Auswahl, Kamera, Fenster und Laden ohne eigene Spielregeln,
 - kritische Playwright-Demos.
 
 ### GitHub Projects
 
-Ein GitHub Project kann manuell als Kanban- oder Zeitachsenansicht ergänzt werden. Es ist jedoch nicht die einzige Planungsquelle. Issues, Milestones, Feature-IDs und diese Roadmap bleiben verbindlich und können von ChatGPT und Codex direkt bearbeitet werden.
+Ein GitHub Project kann manuell als Kanban- oder Zeitachsenansicht ergänzt werden. Es ist jedoch nicht die einzige Planungsquelle. Issues, Milestones, Feature-IDs und diese Roadmap bleiben verbindlich.
 
 ## 4. Alpha-Übersicht
 
 | Alpha | Sichtbares Ergebnis | Docs-Umbrella | Server-Milestone | Client-Milestone |
 |---|---|---:|---:|---:|
 | A0 | Registrierung, Login, Session und geschützte Testseite | #115 | `galaxis-server` #1 | `galaxis-client` #1 |
-| A1 | Kampagne mit kolonisiertem Heimatplaneten | #116 | `galaxis-server` #2 | `galaxis-client` #2 |
-| A2 | Erkundungsschiff bewegt sich im Heimatsternsystem | #117 | `galaxis-server` #3 | `galaxis-client` #3 |
-| A3 | Erkundungsschiff deckt ein Nachbarsystem auf | #118 | `galaxis-server` #4 | `galaxis-client` #4 |
-| A4 | zweite Kolonie gründen | #119 | `galaxis-server` #5 | `galaxis-client` #5 |
+| A1 | 3D-Heimatsystem mit modalem Heimatplanet- und Koloniedetail | #116 | `galaxis-server` #2 | `galaxis-client` #2 |
+| A2 | Erkundungsflotte wird in der 3D-Systemansicht ausgewählt und lokal bewegt | #117 | `galaxis-server` #3 | `galaxis-client` #3 |
+| A3 | 3D-Galaxieansicht und Erkundung eines Nachbarsystems | #118 | `galaxis-server` #4 | `galaxis-client` #4 |
+| A4 | zweite Kolonie über Flotten-Kontextaktion gründen | #119 | `galaxis-server` #5 | `galaxis-client` #5 |
 | A5 | Bevölkerung und Beschäftigung steuern | #120 | `galaxis-server` #6 | `galaxis-client` #6 |
 | A6 | Gebäude, Güter und Versorgung betreiben | #121 | `galaxis-server` #7 | `galaxis-client` #7 |
 | A7 | Technologie erforschen und Freischaltung nutzen | #122 | `galaxis-server` #8 | `galaxis-client` #8 |
 | A8 | mehrere Flotten versorgen und reparieren | #123 | `galaxis-server` #9 | `galaxis-client` #9 |
 | A9 | anderes Reich entdecken und Erstkontakt erleben | #124 | `galaxis-server` #10 | `galaxis-client` #10 |
 | A10 | Vertrag und Handel abschließen | #125 | `galaxis-server` #11 | `galaxis-client` #11 |
-| A11 | begrenzten Krieg und Raumkampf abschließen | #126 | `galaxis-server` #12 | `galaxis-client` #12 |
+| A11 | begrenzten Krieg und lokalen Raumkampf abschließen | #126 | `galaxis-server` #12 | `galaxis-client` #12 |
 | A12 | Krise, Siegespfad und Kampagnenabschluss | #127 | `galaxis-server` #13 | `galaxis-client` #13 |
 
 ---
@@ -109,7 +127,7 @@ Ein GitHub Project kann manuell als Kanban- oder Zeitachsenansicht ergänzt werd
 
 Nach einem frischen Checkout können TypeScript-Server, PostgreSQL und Client reproduzierbar gestartet werden. Ein Benutzer kann sich registrieren, anmelden, seine Session prüfen, eine geschützte Clientseite öffnen und sich abmelden.
 
-A0 enthält noch keine Kampagne, kein Reich, keinen Planeten und keine Spielsimulation. Deterministische Provider und Balancing-Loader werden trotzdem bereits angelegt, damit spätere Systeme nicht auf globale Systemzeit oder Zufallsquellen zurückgreifen.
+A0 enthält noch keine Kampagne, kein Reich, keinen Planeten und keine Spielsimulation. Deterministische Provider und Balancing-Loader werden trotzdem bereits angelegt.
 
 ## 5.2 Verbindlicher Serverstack
 
@@ -144,7 +162,7 @@ Domaincode verwendet weder `Date.now()`, `new Date()`, `Math.random()`, `crypto.
 
 Weitere Quellen:
 
-- Clientstack: [Decision 0006](../decisions/0006-alpha-client-technologiestack.md)
+- Clientstack und UI: [Decision 0007](../decisions/0007-client-ui-rendering-und-lokalisierung.md)
 - OpenAPI-Arbeit: #128
 - lokale Codex-Anleitung: [CODEX-A0.md](CODEX-A0.md)
 
@@ -175,7 +193,7 @@ Danach werden `AGENTS.md`, `docs/AGENTS.md`, `docs/WORKFLOW.md`, `docs/TESTING.m
 | 10 | `Kevni92/galaxis-server#10` | OpenAPI-Contract-Tests |
 | 11 | `Kevni92/galaxis-server#11` | lokale Gesamtumgebung und CI-Gate |
 
-Die Reihenfolge ist bewusst nicht strikt nach Issue-Nummer. Deterministische Provider werden früh eingeführt, bevor Infrastruktur oder spätere Domainmodule direkte Systemabhängigkeiten etablieren.
+Die Reihenfolge ist bewusst nicht strikt nach Issue-Nummer.
 
 ## 5.5 Clientreihenfolge
 
@@ -187,6 +205,8 @@ Der Client beginnt, sobald Health, REST-Fehlerformat und Auth-Vertrag stabil gen
 4. `galaxis-client#4` – Registrierung und Login
 5. `galaxis-client#5` – Lade-, Fehler- und Verbindungszustände
 6. `galaxis-client#6` – A0-End-to-End-Smoke
+
+A0 darf die Rendering-Schicht vorbereiten, muss aber noch keine Raumansicht laden.
 
 ## 5.6 A0-Abnahmedemo
 
@@ -216,15 +236,17 @@ A0 ist abgeschlossen, wenn:
 
 ---
 
-# 6. A1 – Heimatplanet
+# 6. A1 – Heimatplanet und 3D-Systemansicht
 
 ## 6.1 Ziel
 
-Ein neuer Spieler kann eine Singleplayer-Kampagne erstellen. Der Server erzeugt deterministisch eine minimale Galaxie, ein Startreich, ein bekanntes Heimatsystem, einen Heimatplaneten und eine aktive Kolonie mit Startbevölkerung und Grundversorgung. Der Client zeigt diesen Zustand an.
+Ein neuer Spieler kann eine Singleplayer-Kampagne erstellen. Der Server erzeugt deterministisch eine minimale Galaxie, ein Startreich, ein bekanntes Heimatsystem, einen Heimatplaneten und eine aktive Kolonie mit Startbevölkerung und Grundversorgung.
+
+Der Client öffnet die Kampagne in der gemeinsamen Game Shell. Das bekannte Heimatsystem wird als 3D-Szene dargestellt. Stern, Heimatplanet und weitere bekannte Himmelskörper sind auswählbar. Ein Klick auf den Heimatplaneten öffnet ein modales Planet-/Koloniefenster; die Systemansicht bleibt im Hintergrund erhalten.
 
 ## 6.2 Warum Galaxiegenerierung vor Planetenverwaltung kommt
 
-Der Heimatplanet darf nicht als isolierter Datensatz erzeugt werden. Seine ID, sein Sternsystem, seine Lage, seine Verbindungen und sein Reichswissen gehören zur Galaxiewahrheit. Deshalb wird zuerst eine kleine deterministische Galaxie erzeugt und danach die Startposition daraus ausgewählt.
+Der Heimatplanet darf nicht als isolierter Datensatz erzeugt werden. Seine ID, sein Sternensystem, seine Lage, seine Verbindungen und sein Reichswissen gehören zur Galaxiewahrheit.
 
 A1 benötigt noch keine große oder abschließend balancierte Galaxie. Der Generator muss aber bereits dieselben Invarianten verwenden, die A3 für interstellare Erkundung benötigt.
 
@@ -234,6 +256,8 @@ Docs:
 
 - Umbrella #116
 - OpenAPI #129
+- Decision 0007
+- `docs/12-ui-ux/`
 
 Server:
 
@@ -243,35 +267,40 @@ Server:
 4. `galaxis-server#15` – Heimatsystem, Planet und Kolonie
 5. `galaxis-server#16` – Startbevölkerung und Grundversorgung
 6. `galaxis-server#18` – atomare Persistenz und Reload
-7. `galaxis-server#17` – gefilterte A1-REST-Ressourcen
+7. `galaxis-server#17` – gefilterte A1-REST-Ressourcen einschließlich lokaler Positionen und Renderhinweise
 8. `galaxis-server#19` – Referenzszenario und Abnahmetest
 
 Client:
 
 1. `galaxis-client#7` – Kampagnenliste und Erstellung
-2. `galaxis-client#8` – Kampagnenzustand und App-Shell
-3. `galaxis-client#9` – Heimatsystemansicht
-4. `galaxis-client#10` – Planet und Kolonie
-5. `galaxis-client#11` – Navigation und Deep Links
+2. `galaxis-client#8` – Kampagnenzustand und Game-Shell-Bootstrap
+3. `galaxis-client#9` – bekannte 3D-Heimatsystemansicht mit Auswahl und zugänglicher Objektliste
+4. `galaxis-client#10` – modales Heimatplanet- und Koloniedetail mit Tabs und Property-Grids
+5. `galaxis-client#11` – Navigation, Deep Links, Auswahl- und Fensterwiederherstellung
 6. `galaxis-client#12` – A1-End-to-End-Demo
+
+Die bestehenden Client-Issue-Texte sind vor Umsetzung an diesen verbindlichen Scope anzugleichen, insbesondere dort, wo sie noch eine reine Minimalansicht oder Vollbilddetails voraussetzen.
 
 ## 6.4 A1-Gate
 
 - gleicher Seed und gleiche Version ergeben denselben fachlichen Startzustand,
-- unbekannte Nachbarsysteme werden nicht geleakt,
+- unbekannte Nachbarsysteme und Himmelskörper werden nicht geleakt,
 - Kampagne, Reich, Galaxie und Kolonie werden atomar persistiert,
 - Startwerte stammen aus versionierten Balancingdaten,
+- bekannte Himmelskörper werden dreidimensional gerendert,
+- die 3D-Szene verwendet keine eigene Fachlogik,
+- Planetendetails öffnen modal und sind per Tastatur erreichbar,
 - Server-Referenzszenario und Client-E2E sind grün.
 
 ---
 
-# 7. A2 – Schiffe und lokales Sternensystem
+# 7. A2 – Flotten und lokale Bewegung
 
 ## 7.1 Ziel
 
-Das Startreich besitzt ein statisch definiertes Erkundungsschiff in einer Flotte. Der Spieler kann das Schiff sehen und innerhalb des Heimatsternsystems zu einem bekannten lokalen Navigationspunkt bewegen.
+Das Startreich besitzt ein statisch definiertes Erkundungsschiff in einer Flotte. Der Spieler kann die Flotte in der 3D-Sternensystemansicht oder im Outliner auswählen und über eine Sekundäraktion zu einem freien Punkt oder bekannten Objektanker auf der autoritativen XY-Ebene bewegen.
 
-A2 enthält noch keinen Schiffsbau, keinen Kampf und keine interstellare Erkundung.
+A2 enthält noch keinen Schiffsbau, keinen Raumkampf und keine interstellare Erkundung.
 
 ## 7.2 Umsetzung
 
@@ -279,40 +308,47 @@ Docs:
 
 - Umbrella #117
 - OpenAPI #130
+- UI-Vertrag für Raumansichten und Kontextaktionen
 
 Server:
 
 1. `galaxis-server#20` – MVP-Schiffskatalog
-2. `galaxis-server#21` – Ship-/Fleet-Aggregate
+2. `galaxis-server#21` – Ship-/Fleet-Aggregate mit lokaler Position
 3. `galaxis-server#22` – Startflotte
-4. `galaxis-server#23` – lokaler Bewegungsbefehl
-5. `galaxis-server#24` – deterministische Reise
-6. `galaxis-server#25` – REST-Ressourcen
+4. `galaxis-server#23` – lokaler Bewegungsbefehl für freie XY-Punkte und Objektanker
+5. `galaxis-server#24` – deterministische lokale Reise
+6. `galaxis-server#25` – REST-Ressourcen und Kontextaktionsvorschau
 7. `galaxis-server#26` – A2-Szenario
 
 Client:
 
-1. `galaxis-client#13` – lokale SVG-Systemkarte
-2. `galaxis-client#14` – Schiff-/Flottenpanel
-3. `galaxis-client#15` – Zielwahl und Befehl
-4. `galaxis-client#16` – Reisefortschritt
+1. `galaxis-client#13` – interaktive 3D-Systemkarte statt SVG-MVP
+2. `galaxis-client#14` – Flottenauswahl, Outliner und modales Flottendetail
+3. `galaxis-client#15` – Sekundärklick-Zielwahl, Kontextmenü, Vorschau und Befehl
+4. `galaxis-client#16` – Reisefortschritt und serverbestätigte Position
 5. `galaxis-client#17` – A2-End-to-End-Demo
+
+Die bestehenden Client-Issues #13 bis #16 sind vor Umsetzung zu aktualisieren. Der bisherige Ausschluss von 3D und die Beschränkung auf vorgegebene Navigationspunkte sind ersetzt.
 
 ## 7.3 A2-Gate
 
-- Flotte besitzt konsistente Mitgliedschaft und Position,
+- Flotte besitzt konsistente Mitgliedschaft, System und lokale XY-Position,
+- freie Zielpunkte und Objektanker werden serverseitig validiert,
 - doppelte Command-ID erzeugt keine Doppelreise,
 - Client schließt keine Reise selbst ab,
-- normaler und nachgeladener Ablauf sind gleichwertig,
+- 3D-Interpolation und Reload liefern denselben fachlichen Zustand,
+- Maus und Tastatur können dieselben Ziele und Befehle erreichen,
 - A2-Headless- und E2E-Szenario sind grün.
 
 ---
 
-# 8. A3 – Interstellare Erkundung
+# 8. A3 – Galaxieansicht und interstellare Erkundung
 
 ## 8.1 Ziel
 
-Das Erkundungsschiff kann über eine bekannte Verbindung zu einem zunächst unbekannten Nachbarsystem reisen. Nach Ankunft startet der Spieler einen Erkundungsauftrag. Beim serverseitigen Abschluss werden zulässige Systeminformationen reichsspezifisch freigegeben.
+Der Spieler kann jederzeit zwischen Sternensystem- und Galaxieansicht wechseln. Die Galaxieansicht zeigt bekannte Systeme, Namen, Verbindungen und Wissensstände räumlich. Eine ausgewählte Erkundungsflotte kann per Sekundäraktion auf ein bekanntes oder geortetes Nachbarsystem eine Route, Reise oder Erkundung vorbereiten.
+
+Nach Ankunft startet der Spieler einen Erkundungsauftrag. Beim serverseitigen Abschluss werden zulässige Systeminformationen reichsspezifisch freigegeben.
 
 ## 8.2 Umsetzung
 
@@ -320,32 +356,37 @@ Docs:
 
 - Umbrella #118
 - OpenAPI #131
+- Decision 0007
 
 Server:
 
 1. `galaxis-server#27` – interstellares Verbindungs- und Routenmodell
-2. `galaxis-server#28` – reichsspezifisches Wissen
+2. `galaxis-server#28` – reichsspezifisches Wissen und Namenssichtbarkeit
 3. `galaxis-server#29` – interstellarer Reisebefehl
 4. `galaxis-server#30` – Erkundungsauftrag und Ergebnis
 5. `galaxis-server#31` – Offline-Nachholung und Rückkehrbericht
-6. `galaxis-server#32` – Galaxie- und Changes-REST
+6. `galaxis-server#32` – Galaxie-, Kontextaktions- und Changes-REST
 7. `galaxis-server#33` – A3-Szenario
 
 Client:
 
-1. `galaxis-client#18` – wissensgefilterte Galaxiekarte
-2. `galaxis-client#19` – Route und Reisebefehl
+1. `galaxis-client#18` – wissensgefilterte 3D-Galaxieansicht mit zugänglicher Systemliste
+2. `galaxis-client#19` – Sekundärklick auf System, Route und Reisebefehl
 3. `galaxis-client#20` – Erkundungsauftrag
 4. `galaxis-client#22` – Changes-Synchronisierung
-5. `galaxis-client#21` – Ergebnis und Rückkehrübersicht
+5. `galaxis-client#21` – Ergebnis und Rückkehrübersicht mit Deep Links
 6. `galaxis-client#23` – A3-End-to-End-Demo
+
+Das bestehende Client-Issue #18 ist vor Umsetzung von einer ausdrücklich zweidimensionalen Karte auf die wissensgefilterte räumliche Galaxieansicht umzustellen.
 
 ## 8.3 A3-Gate
 
 - interne Wahrheit und Reichswissen sind getrennt,
-- unbekannte IDs und Objektzahlen werden nicht übertragen,
+- unbekannte IDs, Objekte und Objektzahlen werden nicht übertragen,
+- geortete und erkundete Systemnamen werden unterscheidbar und nicht ausschließlich farbcodiert dargestellt,
 - Reise und Erkundung besitzen getrennte idempotente Zustände,
 - Galaxie wird bei Erkundung nicht neu ausgewürfelt,
+- visuelle Sternabstände ersetzen keine Graphverbindungen,
 - normale und Offline-Nachholung liefern denselben Endhash,
 - A3-Headless- und E2E-Szenario sind grün.
 
@@ -357,11 +398,11 @@ Für A4 bis A12 werden zunächst Umbrella-Issues und Milestones geführt. Konkre
 
 ## A4 – Zweite Kolonie
 
-Kolonisierungsmechanismus, Zielprüfung, Auftrag, Aufbauphase und zweite Kolonie in Navigation und Verwaltung.
+Kolonisierungsmechanismus, Zielprüfung, Auftrag, Aufbauphase und zweite Kolonie. Der Spieler wählt eine geeignete Flotte und erhält am bekannten Planeten die Kontextaktion `Kolonisieren`, wenn der Server alle Voraussetzungen bestätigt. Planetendetails bleiben modal.
 
 ## A5 – Bevölkerung und Arbeit
 
-Bevölkerungsgruppen, Erwerbspotenzial, Qualifikation, Beschäftigungsprioritäten, natürliche Entwicklung, Migration und Produktivität.
+Bevölkerungsgruppen, Erwerbspotenzial, Qualifikation, Beschäftigungsprioritäten, natürliche Entwicklung, Migration und Produktivität. Inhalte folgen dem gemeinsamen Fenstersystem, Property-Grids und Tabellenkatalog.
 
 ## A6 – Wirtschaft, Gebäude und Versorgung
 
@@ -369,11 +410,11 @@ Güter, Gebäude, Bauaufträge, Produktion, Lager, Reservierung, Bedürfnisse, M
 
 ## A7 – Forschung und Technologien
 
-Forschungsleistung, Auswahl, Voraussetzungen, Fortschritt, Abschluss, Freischaltungen, Spezialisierung und Aufholen.
+Forschungsleistung, Auswahl, Voraussetzungen, Fortschritt, Abschluss, Freischaltungen, Spezialisierung und Aufholen. Der Technologiebaum darf als begründete Vollbildansicht umgesetzt werden; Auswahl- und Detaildialoge bleiben im Fenstersystem.
 
 ## A8 – Flottenlogistik und Reparatur
 
-Mehrere Flotten, Aufteilen, Zusammenführen, Reichweite, Versorgung, Schäden, Reparatur und Bergung.
+Mehrere Flotten, Aufteilen, Zusammenführen, Reichweite, Versorgung, Schäden, Reparatur und Bergung. Kontextaktionen und Outliner werden erweitert, nicht ersetzt.
 
 ## A9 – Andere Reiche und Erstkontakt
 
@@ -385,7 +426,9 @@ Diplomatische Aktionen, Angebote, Verträge, Handelsbeziehungen, Wirkungen und V
 
 ## A11 – Konflikt und Raumkampf
 
-Kriegserklärung, Flottenbegegnung, deterministischer Kampf mit kontrolliertem Zufall, Rückzug, Schäden, Verluste und Frieden.
+Kriegserklärung, lokale Flottenbegegnung, Sensor-, Abfang- und Gefechtsreichweite, Flottenhaltungen, deterministischer Kampf mit kontrolliertem Zufall, Rückzug, Schäden, Verluste und Frieden.
+
+Ein Kampf beginnt serverseitig anhand der autoritativen XY-Positionen und Regeln. Optische 3D-Nähe oder Modellüberschneidung sind keine Kampfbedingung.
 
 ## A12 – Ereignisse, Krise und Kampagnenabschluss
 
@@ -401,7 +444,7 @@ Balancing-Issues behalten ihre B1–B4-Milestones. Diese Roadmap ordnet sie zus�
 |---|---|
 | A0 | #98 Balancing-Manifest/Validator, #100 vollständige Baseline als übergreifendes Ziel |
 | A1 | #83 Pacing, #84 Galaxiegröße/Startabstände, #85 Planet/Kolonie, #86 Startbevölkerung, #99 Szenariofixtures |
-| A2 | #93 Schiffskosten, #94 Reisezeiten, #99 Fixtures, #101 Headless-Runner-Grundlage |
+| A2 | #93 Schiffskosten, #94 lokale Reisezeiten und Systemmaßstab, #99 Fixtures, #101 Headless-Runner-Grundlage |
 | A3 | #84 Startabstände, #94 interstellare Reise, #99 Fixtures, #101 Runner, #105 Offline-Äquivalenz |
 | A4 | #85 Koloniegründung, #91 Haushalt/Defizit |
 | A5 | #86 Bevölkerung/Migration, #87 Beschäftigung, #90 Mangelstufen |
@@ -410,7 +453,7 @@ Balancing-Issues behalten ihre B1–B4-Milestones. Diese Roadmap ordnet sie zus�
 | A8 | #93 Flottenkosten, #94 Logistik, #95 Schäden/Reparatur |
 | A9 | #84 Galaxie-/Startverteilung, #96 Beziehungen und Erstkontaktwerte |
 | A10 | #96 Diplomatie, Verträge, Krieg und Frieden |
-| A11 | #93 bis #96 sowie B2-Simulationswerkzeuge #101 bis #105 |
+| A11 | #93 bis #96 sowie B2-Simulationswerkzeuge #101 bis #105; zusätzlich Sensor-, Abfang- und Gefechtsreichweiten |
 | A12 | #97 Ereignisse/Krise/Endgame, B2 #101–#105, B3 #106–#109, B4 #110–#113 |
 
 Balancing-Arbeitsweise je Alpha:
@@ -420,21 +463,13 @@ Balancing-Arbeitsweise je Alpha:
 3. Referenzfixture parallel zum Domainmodul erstellen.
 4. Vorher-/Nachher-Läufe mit identischen Seeds verwenden.
 5. Changelog, Version und Hash aktualisieren.
-6. Keine Fachregel durch eine Zahl ersetzen oder umgehen.
+6. Keine Fachregel durch eine Zahl oder eine visuelle Darstellung ersetzen oder umgehen.
 
 ---
 
 # 11. PR- und Codex-Arbeitsweise
 
 Codex bearbeitet grundsätzlich genau ein konkretes Issue pro Branch.
-
-Empfohlene Branchbenennung:
-
-```text
-codex/a0-server-001-stack
-codex/a0-server-002-repo
-codex/a0-server-008-runtime
-```
 
 Vor jedem Issue:
 
@@ -444,8 +479,9 @@ Vor jedem Issue:
 4. Abhängigkeiten und offene Vorgänger prüfen.
 5. Tests bestimmen.
 6. kleinsten sinnvollen PR-Umfang festlegen.
+7. bei Clientarbeit prüfen, ob das Issue bereits Decision 0007 und `docs/12-ui-ux/` widerspruchsfrei abbildet.
 
-Ein abgeschlossener PR enthält Feature-ID, Quellen, tatsächliche Tests, bekannte Risiken und aktualisierte Navigation. Folgeprobleme erhalten eigene Issues.
+Ein abgeschlossener PR enthält Feature-ID, Quellen, tatsächliche Tests, bekannte Risiken, aktualisierte Navigation und das vorgeschriebene Closing-Keyword.
 
 # 12. Fortschritts- und Alpha-Gates
 
@@ -458,18 +494,19 @@ Eine Alpha wird nicht allein dadurch abgeschlossen, dass alle Issues geschlossen
 - Headless-/Integrationsszenario,
 - minimalen Client-E2E,
 - dokumentierten Balancingstand,
+- keine Informationslecks durch 3D-Rendering oder Kontextaktionen,
+- Tastaturäquivalenz für kritische räumliche Interaktionen,
 - keine roten bekannten Abweichungen.
 
 Produktive Implementierung der nächsten Alpha beginnt erst, wenn das aktuelle Gate keine grundlegende Architektur- oder Datenmodelländerung mehr erwarten lässt.
 
 # 13. Nächster konkreter Schritt
 
-Der lokale Einstieg ist [CODEX-A0.md](CODEX-A0.md).
+Der lokale A0-Einstieg ist [CODEX-A0.md](CODEX-A0.md).
 
-Begonnen wird mit:
+Vor A1-/A2-Clientarbeit müssen:
 
-1. Docs-Submodule bootstrapen.
-2. `galaxis-server#1` mit TypeScript/Node.js umsetzen.
-3. kleinen Draft-PR erstellen und prüfen.
-4. danach `galaxis-server#2`, `#8` und die weitere A0-Reihenfolge abarbeiten.
-5. Client A0 beginnen, sobald REST-Kern und Auth-Vertrag stabil sind.
+1. Decision 0007 und `docs/12-ui-ux/` in das Client-Docs-Submodule übernommen werden,
+2. OpenAPI #129 bis #131 lokale Positionen, Raumobjekte und Kontextaktionen abbilden,
+3. die bestehenden Client-Issues #9, #10, #13 bis #16 und #18 bis #19 an die neue verbindliche 3D- und Fensterplanung angepasst werden,
+4. die Rendering-Schicht und das gemeinsame Fenstersystem als kleine, testbare Grundlagen geschnitten werden.

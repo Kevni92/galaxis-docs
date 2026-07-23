@@ -4,13 +4,14 @@ Status: Freigegeben
 
 ## Zweck
 
-Dieses Dokument definiert Planeten als nutzbare Lebensräume, den Lebenszyklus von Kolonien, planetare Entwicklung, Bezirke, Gebäude, Bauvorgänge sowie Spezialisierung und Verwaltung.
+Dieses Dokument definiert Planeten als nutzbare Lebensräume, den Lebenszyklus von Kolonien, planetare Entwicklung, Bezirke, Gebäude, Bauvorgänge sowie Spezialisierung und Verwaltung. Es legt außerdem fest, wie Planeten in der 3D-Sternensystemansicht ausgewählt und ihre Details modal dargestellt werden.
 
 ## Planet als fachliche Entität
 
 Jeder Planet besitzt mindestens:
 
 - stabile ID und Zugehörigkeit zu einem Sternensystem,
+- autoritative lokale XY-Position,
 - Planetenkategorie,
 - Größenklasse,
 - Umwelt- und Gefahrenmerkmale,
@@ -18,7 +19,28 @@ Jeder Planet besitzt mindestens:
 - grundlegende Kapazitäten,
 - reichsspezifisch bekannte Eigenschaften.
 
-Planetenwerte werden serverseitig gespeichert. Grafische Größe oder Farbe erzeugt keine zusätzliche Regel.
+Planetenwerte werden serverseitig gespeichert. Grafische Größe, sichtbare 3D-Höhe, Textur, Orbitanimation oder Farbe erzeugen keine zusätzliche Regel.
+
+## Darstellung und Planetendetail
+
+Ein dem Reich bekannter Planet wird als dreidimensionaler Himmelskörper in der Sternensystemansicht dargestellt.
+
+Ein Primärklick oder die entsprechende Tastaturaktion:
+
+1. wählt den Planeten aus,
+2. fokussiert ihn in Szene und Outliner,
+3. öffnet ein modales Planetendetailfenster über der Sternensystemansicht.
+
+Das Detailfenster ersetzt die Raumansicht nicht durch eine eigene Vollbildseite. Es verwendet das gemeinsame Fenstersystem und kann abhängig von bekannten Daten und freigeschalteten Systemen Tabs enthalten:
+
+- Übersicht,
+- Kolonie,
+- Bevölkerung,
+- Versorgung,
+- Gebäude,
+- Verlauf.
+
+Nicht bekannte oder fachlich noch nicht vorhandene Bereiche werden nicht durch leere geheime Tabs angedeutet. Stabile Deep Links dürfen System, Planet, Detailfenster und aktiven Tab wiederherstellen.
 
 ## Planetenkategorien und Bewohnbarkeit
 
@@ -34,6 +56,8 @@ Bewohnbarkeit beeinflusst später insbesondere:
 
 Ein Planet darf grundsätzlich unbewohnbar, eingeschränkt bewohnbar oder regulär bewohnbar sein. Terraforming oder künstliche Lebensräume sind spätere Freischaltungen und keine Voraussetzung des MVP.
 
+Unbekannte Bewohnbarkeit erscheint im Detailfenster nicht als `0` oder negativ, sondern ausdrücklich als unbekannt.
+
 ## Größe und Kapazitäten
 
 Die Größenklasse begrenzt den langfristig nutzbaren Raum. Daraus werden getrennte Kapazitäten abgeleitet, beispielsweise:
@@ -46,6 +70,22 @@ Die Größenklasse begrenzt den langfristig nutzbaren Raum. Daraus werden getren
 
 Kapazitäten sind keine beliebig erweiterbaren Bauplätze. Technologien und Entwicklung dürfen Grenzen verändern, müssen dies aber sichtbar und nachvollziehbar tun.
 
+Die sichtbare 3D-Größe des Planetenkörpers ist nicht die numerische Kapazität.
+
+## Kontextaktionen auf Planeten
+
+Ein Sekundärklick auf einen bekannten Planeten kann bei ausgewählter Flotte ein Kontextmenü öffnen. Mögliche Aktionen sind abhängig von Wissen, Flottenfähigkeit und Zustand, beispielsweise:
+
+- hierhin fliegen,
+- Orbit ansteuern,
+- erkunden,
+- beobachten,
+- kolonisieren,
+- Transport entladen,
+- Details öffnen.
+
+Der Client leitet die Verfügbarkeit nicht allein aus Planet und Flottenzusammensetzung ab. Der Server liefert oder bestätigt Action-ID, Voraussetzungen, Deaktivierungsgrund, Kosten, Dauer, Risiken und resultierenden Befehl.
+
 ## Koloniegründung
 
 Eine Koloniegründung ist ein serverautoritativ validierter Befehl. Voraussetzungen sind mindestens:
@@ -56,6 +96,8 @@ Eine Koloniegründung ist ein serverautoritativ validierter Befehl. Voraussetzun
 - verfügbare Gründungseinheit oder definierter Gründungsprozess,
 - erforderliche Ressourcen und Bevölkerung,
 - keine fachlich ausschließende Konkurrenzsituation.
+
+Enthält die ausgewählte Flotte die notwendige Kolonisierungsfähigkeit, kann die Kontextaktion `Kolonisieren` am Zielplaneten angeboten werden. Vor Bestätigung zeigt ein Dialog bekannte Voraussetzungen, Kosten, Dauer, Risiken und erwarteten Anfangszustand.
 
 Der Befehl bindet Kosten und benötigt Kampagnenzeit. Abbruch, Verlust der Gründungseinheit oder Änderung des Zugangs werden nach dem erreichten Fortschritt behandelt; bereits verbrauchte Leistungen werden nicht automatisch vollständig erstattet.
 
@@ -86,6 +128,8 @@ Folgen können sein:
 - sinkende Lebensqualität,
 - verlangsamtes Wachstum,
 - Schäden oder Rückgang bei anhaltender Krise.
+
+Das Planetendetail zeigt zuerst den entscheidungsrelevanten Zustand und macht Ursachen anschließend über Property-Grids, Tabellen oder Begriffserklärungen zugänglich.
 
 ## Bezirke und Flächennutzung
 
@@ -124,6 +168,8 @@ Das MVP verwendet pro Kolonie eine autoritative Bauwarteschlange. Ein Bauauftrag
 - Abbruch erstattet nur den fachlich noch nicht verbrauchten Anteil.
 
 Spätere Technologien dürfen zusätzliche parallele Baukapazität ermöglichen, ohne das Grundmodell zu ersetzen.
+
+Die Bauwarteschlange wird im Kolonietab über die gemeinsame `QueueTable` dargestellt und nicht als eigenes abweichendes Bedienmuster umgesetzt.
 
 ## Spezialisierung
 
@@ -166,11 +212,23 @@ Eine kurzfristige Versorgungskrise löscht eine Kolonie nicht automatisch.
 
 ### Client
 
-Der Client muss Planeteneigenschaften, Bewohnbarkeit, Kapazitäten, Koloniezustand, Bauwarteschlange, Spezialisierung, Engpässe und Automatisierung verständlich darstellen.
+Der Client muss:
+
+- bekannte Planeten dreidimensional in der Sternensystemansicht darstellen,
+- Planeteneigenschaften, Bewohnbarkeit, Kapazitäten und Wissensstand verständlich anzeigen,
+- Planetendetails ausschließlich im gemeinsamen modalen Fenstersystem öffnen,
+- Koloniestatus, Bauwarteschlange, Spezialisierung, Engpässe und Automatisierung darstellen,
+- Kontextaktionen nur aus serverautoritativen Daten anbieten,
+- unbekannte Werte und nicht vorhandene Werte unterscheiden.
 
 ### Server
 
-Der Server muss Gründung, Entwicklung, Kapazitäten, Bauaufträge, Zustände und Automatisierungsbefehle autoritativ validieren und in Kampagnenzeit auswerten.
+Der Server muss:
+
+- Planetenidentität, lokale Position und Wissen filtern,
+- Gründung, Entwicklung, Kapazitäten, Bauaufträge, Zustände und Automatisierungsbefehle autoritativ validieren,
+- Kontextaktionen sicher ableiten,
+- Vorgänge in Kampagnenzeit auswerten.
 
 ## Offene Balancingfragen
 
@@ -183,7 +241,10 @@ Der Server muss Gründung, Entwicklung, Kapazitäten, Bauaufträge, Zustände un
 ## Akzeptanzkriterien
 
 - Planeten, Kolonien, Bezirke und Gebäude sind eindeutig getrennt.
+- Bekannte Planeten werden als 3D-Himmelskörper in der Systemansicht dargestellt.
+- Ein ausgewählter Planet öffnet ein modales Detailfenster, keine eigene Vollbildseite.
 - Koloniegründung und Lebenszyklus besitzen nachvollziehbare Zustände.
+- Kolonisierung kann als serverautoritativ validierte Kontextaktion einer geeigneten Flotte ausgelöst werden.
 - Entwicklung ist an konkrete Kapazitäten und Versorgung gebunden.
 - Bauvorgänge sind serverautoritativ und offline-fähig.
 - Spezialisierung und Automatisierung bleiben transparent.
@@ -194,3 +255,5 @@ Der Server muss Gründung, Entwicklung, Kapazitäten, Bauaufträge, Zustände un
 - [Besitz und Kontrolle](../02-galaxy/besitz-und-kontrolle.md)
 - [Bevölkerung und Arbeit](../05-population/bevoelkerung-und-arbeit.md)
 - [Wirtschaft und Versorgung](../06-economy/wirtschaft-und-versorgung.md)
+- [Game Shell und Fenstersystem](../12-ui-ux/game-shell-und-fenstersystem.md)
+- [Raumansichten und Flotteninteraktion](../12-ui-ux/raumansichten-und-flotteninteraktion.md)

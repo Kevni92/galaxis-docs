@@ -1,6 +1,6 @@
 # Galaxie
 
-Dieser Bereich beschreibt den räumlichen Spielraum, seine natürlichen Inhalte und den reichsspezifischen Wissensstand.
+Dieser Bereich beschreibt den räumlichen Spielraum, seine natürlichen Inhalte, die lokale und interstellare Bewegung sowie den reichsspezifischen Wissensstand.
 
 ## Dokumente
 
@@ -9,6 +9,14 @@ Dieser Bereich beschreibt den räumlichen Spielraum, seine natürlichen Inhalte 
 - [Erkundung und Informationsstände](erkundung-und-informationsstaende.md)
 - [Bewegung und räumliche Verbindungen](bewegung-und-verbindungen.md)
 - [Besitz und Kontrolle von Sternensystemen](besitz-und-kontrolle.md)
+
+## Darstellungs- und Interaktionsgrundlage
+
+- Sternensysteme werden als 3D-Szene dargestellt.
+- Sterne, Planeten und andere bekannte Himmelskörper sind räumlich auswählbar.
+- Fachliche lokale Positionen und Bewegungen verwenden eine serverautoritative XY-Ebene.
+- Planet-, Stern- und Objektdetails öffnen als modale Fenster über der Raumansicht.
+- Galaxieansicht, Systemansicht, Flottenauswahl und Kontextaktionen folgen [`docs/12-ui-ux/`](../12-ui-ux/README.md).
 
 ## Fachliche Folgeabhängigkeiten
 

@@ -4,7 +4,7 @@ Status: Freigegeben
 
 ## Zweck
 
-Dieses Dokument definiert Schiffe, Schiffstypen, Flottenbildung, Flottenbefehle, Raumkampf, Schäden, Reparatur, Verluste, Versorgung und Reichweite.
+Dieses Dokument definiert Schiffe, Schiffstypen, Flottenbildung, lokale und interstellare Flottenbefehle, Raumkampf, Schäden, Reparatur, Verluste, Versorgung und Reichweite. Es legt außerdem das fachliche Modell fest, das die Stellaris-artige Auswahl und Sekundäraktion in den Raumansichten abbildet.
 
 ## Schiff
 
@@ -13,7 +13,7 @@ Ein Schiff ist eine veränderliche, eindeutig identifizierte Entität. Es besitz
 - stabile ID,
 - Schiffstyp und Bauvariante,
 - Besitzer,
-- aktuellen Standort oder Reiseabschnitt,
+- aktuellen Standort, lokale XY-Position oder Reiseabschnitt,
 - strukturelle Integrität,
 - Kampffähigkeit und zivile Funktionen,
 - Versorgungszustand,
@@ -52,16 +52,18 @@ Eine Flotte ist eine organisatorische Einheit aus einem oder mehreren Schiffen. 
 - stabile ID und Anzeigename,
 - Besitzer und Controllerberechtigung,
 - Schiffsmenge,
-- aktuellen Standort oder Reiseabschnitt,
+- aktuelles Sternensystem und lokale XY-Position oder interstellaren Reiseabschnitt,
 - aktiven Befehl und Warteschlange,
 - Haltung und Rückzugsregeln,
 - zusammengefasste Reichweite, Geschwindigkeit, Sensorik und Kampfkraft.
 
 Die langsamste oder am stärksten eingeschränkte Einheit kann die gemeinsame Bewegungsfähigkeit begrenzen. Die konkrete Aggregation wird deterministisch berechnet.
 
+Die sichtbare 3D-Position einer Flotte wird aus ihrer autoritativen fachlichen Position abgeleitet. Modellgröße, Formation und visuelle Höhe verändern keine Reichweite oder Begegnungsbedingung.
+
 ## Flottenbildung
 
-Schiffe können im selben fachlich zulässigen Standort zusammengelegt oder geteilt werden.
+Schiffe können am selben fachlich zulässigen Standort zusammengelegt oder geteilt werden.
 
 - Teilung und Zusammenlegung sind serverautoritativ.
 - Schiffe dürfen nicht gleichzeitig mehreren Flotten angehören.
@@ -71,27 +73,108 @@ Schiffe können im selben fachlich zulässigen Standort zusammengelegt oder gete
 
 Kommandokapazität kann die Größe oder Anzahl effizient geführter Flotten begrenzen, muss aber als sichtbare Reichs- oder Führungsressource definiert sein.
 
+## Auswahl und Bedienung
+
+Ein Primärklick auf eine sichtbare eigene Flotte oder die entsprechende Tastaturaktion wählt sie aus. Auswahl synchronisiert:
+
+- Markierung in Sternensystem- oder Galaxieansicht,
+- Outliner,
+- Flottenpanel oder modales Flottendetail,
+- sichtbare Route, Reichweiten und aktiven Befehl,
+- Kontext für nachfolgende Sekundäraktionen.
+
+Auswahl allein verändert keinen fachlichen Zustand.
+
+Bei ausgewählter Flotte gilt:
+
+- Sekundäraktion auf freien Raum bereitet lokale Bewegung zu einer XY-Position vor.
+- Sekundäraktion auf einen Himmelskörper oder eine künstliche Entität öffnet ein Kontextmenü mit zulässigen Aktionen.
+- Sekundäraktion auf ein Sternensystem in der Galaxieansicht öffnet interstellare Aktionen.
+- Eine modifizierte Sekundäraktion kann einen Folgeauftrag an die Warteschlange anhängen.
+
+Jede Interaktion besitzt eine gleichwertige Tastatur- und Listenalternative.
+
 ## Flottenbefehle
 
 Das MVP benötigt mindestens:
 
-- bewegen,
+- lokal bewegen,
+- interstellar bewegen,
 - erkunden,
 - patrouillieren oder Position halten,
 - eskortieren,
 - transportieren,
 - kolonisieren, sofern die Flotte dafür ausgerüstet ist,
 - angreifen oder militärisch eingreifen,
-- zurückziehen,
+- abfangen oder verfolgen,
+- zurückziehen oder ausweichen,
 - reparieren oder versorgen.
 
 Jeder Befehl definiert Voraussetzungen, Ziel, Kosten, Start, Dauer, Abbruch, Ergebnis und sichtbare Rückmeldung. Spieler und AI verwenden dieselben Befehlstypen.
+
+## Kontextaktionen
+
+Ein Kontextmenü ist eine aktuelle serverautoritativ gefilterte Abbildung möglicher Befehle für Auswahl und Ziel.
+
+Beispiele:
+
+### Freier lokaler Punkt
+
+- hierhin fliegen,
+- Position halten,
+- Patrouillenpunkt setzen.
+
+### Unkolonisierter Planet
+
+- hierhin fliegen,
+- Orbit ansteuern,
+- erkunden,
+- kolonisieren, wenn Fähigkeit und Voraussetzungen bestehen,
+- Details öffnen.
+
+### Eigener Planet oder eigene Station
+
+- hierhin fliegen,
+- reparieren,
+- versorgen,
+- Transport aufnehmen oder entladen,
+- Details öffnen.
+
+### Feindliche Flotte
+
+- angreifen,
+- abfangen,
+- verfolgen,
+- Abstand halten,
+- beobachten,
+- Details öffnen.
+
+Der Client darf Aktionen nicht allein aus Schiffstypen und sichtbaren Zielmerkmalen freischalten. Der Server liefert oder bestätigt Action-ID, Aktivierung, sicheren Deaktivierungsgrund, Kosten, Dauer, Risiko und resultierenden Befehlstyp.
 
 ## Befehlswarteschlange
 
 Eine Flotte besitzt höchstens einen aktiven Befehl und eine geordnete Warteschlange. Der Server prüft einen Folgeauftrag vor seinem tatsächlichen Start erneut.
 
 Ein ungültiger Folgeauftrag wird mit Grund angehalten oder übersprungen, wenn der Spieler dies ausdrücklich als Verhalten gewählt hat. Die Warteschlange darf keine unbekannten Ziele oder Routen enthalten.
+
+## Lokale Bewegung
+
+Lokale Flottenbewegung findet auf der autoritativen XY-Ebene eines Systems statt. Ein Ziel kann eine freie Position oder ein definierter Objektanker sein.
+
+Der Server bestimmt:
+
+- gültigen Start und Zielpunkt,
+- Route oder Segment,
+- Geschwindigkeit,
+- Start- und Ankunftszeit,
+- mögliche Unterbrechungen,
+- Zeitpunkt, an dem Begegnungs- oder Kampfregeln geprüft werden.
+
+Der Client darf die Flotte zwischen bestätigten Zuständen visuell interpolieren, schließt die Bewegung aber niemals selbst ab.
+
+## Interstellare Bewegung
+
+Interstellare Bewegung folgt bekannten und nutzbaren Verbindungen. Ein Zielsystem kann in der Galaxieansicht über eine Kontextaktion gewählt werden. Route, Zugangsrechte, Versorgung und Folgeabschnitte werden serverseitig bestimmt oder validiert.
 
 ## Reichweite und Versorgung
 
@@ -113,11 +196,44 @@ Jede Flotte besitzt einen Versorgungsstatus:
 
 Entfernung, Einsatzdauer, Schäden und feindliche Kontrolle können den Status verschlechtern. Folgen beginnen mit reduzierter Reparatur, Geschwindigkeit oder Kampffähigkeit und eskalieren erst bei anhaltender Unterversorgung.
 
+Reichweiten dürfen als Kreise oder Flächen in der 3D-Szene visualisiert werden, werden aber ausschließlich aus serverseitigen Werten abgeleitet.
+
+## Flottenhaltungen
+
+Eine Flotte besitzt eine sichtbare Haltung, die Begegnungen und automatische Reaktionen innerhalb veröffentlichter Regeln beeinflusst. Mindestens vorzusehen sind fachlich unterscheidbare Haltungen wie:
+
+- `passiv`,
+- `defensiv`,
+- `abfangen`,
+- `aggressiv`,
+- `ausweichen`.
+
+Eine Haltung ist kein geheimer AI-Modus. Sie definiert nachvollziehbar, ob eine Flotte bei feindlicher Annäherung wartet, ausweicht, verfolgt, abfängt oder einen Kampf auslöst.
+
+Konkrete Reichweiten, Prioritäten und Umschaltfolgen werden im Balancing und in den Befehlsverträgen festgelegt.
+
+## Sensor-, Abfang- und Gefechtsreichweite
+
+Folgende Reichweiten bleiben getrennt:
+
+- **Sensorreichweite:** bestimmt, ob und wie genau eine fremde Flotte sichtbar ist.
+- **Abfang- oder Begegnungsreichweite:** bestimmt, ob eine Haltung eine Annäherung oder Verfolgung auslösen kann.
+- **Gefechtsreichweite:** bestimmt, wann Flotten fachlich am selben Kampfstandort gelten und eine Kampfinstanz beginnen kann.
+- **Waffenreichweite:** wirkt innerhalb einer Kampfinstanz auf Zielauswahl und Kampfwirkung.
+
+Optische Nähe, Modellüberschneidung oder Kamerazoom sind keine Reichweitenregeln.
+
 ## Kampfbeginn
 
-Ein Raumkampf beginnt, wenn feindliche Flotten nach Kriegs-, Zugangs- und Haltungsregeln am selben Kampfstandort aufeinandertreffen und mindestens eine Seite den Kampf auslöst oder nicht ausweichen kann.
+Ein Raumkampf beginnt, wenn:
 
-Der Server bestimmt Teilnehmer anhand eines autoritativen Zeitpunktes. Später eintreffende Flotten treten nach dokumentierten Verstärkungsregeln bei.
+- feindliche Flotten nach Kriegs-, Zugangs- und Haltungsregeln auf der autoritativen lokalen XY-Ebene innerhalb der definierten Gefechts- oder Begegnungsbedingung aufeinandertreffen,
+- mindestens eine Seite angreift, abfängt oder nicht erfolgreich ausweichen kann,
+- der Server Teilnehmer und Zeitpunkt autoritativ bestimmt.
+
+Später eintreffende Flotten treten nach dokumentierten Verstärkungsregeln bei.
+
+Eine feindliche Flotte in bloßer Sensorreichweite startet nicht automatisch einen Kampf. Sensorik, Abfangen und Gefecht bleiben getrennt.
 
 ## Kampfinstanz
 
@@ -185,31 +301,56 @@ Ein Reich erhält nur Informationen, die eigene Teilnehmer, Sensoren oder späte
 
 ## Offline-Fortschritt
 
-Kämpfe und Reisen laufen während Abwesenheit weiter. Kritische bevorstehende Konflikte benötigen angemessene Vorwarnung, soweit das Reich sie erkennen kann. Rückkehrberichte priorisieren Kämpfe, schwere Schäden, Verluste, abgebrochene Befehle und veränderte Kontrolle.
+Kämpfe und Reisen laufen während Abwesenheit weiter. Kritische bevorstehende Konflikte benötigen angemessene Vorwarnung, soweit das Reich sie erkennen kann.
+
+Rückkehrberichte priorisieren Kämpfe, schwere Schäden, Verluste, abgebrochene Befehle, veränderte Kontrolle und automatische Reaktionen aus Flottenhaltungen.
 
 ## Anforderungen an Client und Server
 
 ### Client
 
-Der Client muss Flottenzusammensetzung, Befehle, Route, Versorgung, Zustand, Rückzugshaltung und Kampfberichte verständlich darstellen.
+Der Client muss:
+
+- Schiffe und Flotten in System- und Galaxieansicht darstellen,
+- Auswahl, Outliner und modale Flottendetails synchronisieren,
+- Flottenzusammensetzung, Befehle, Route, Versorgung, Zustand, Haltung und Rückzug verständlich darstellen,
+- freie lokale Ziele und Objektziele über Sekundäraktionen anbieten,
+- Kontextaktionen aus serverautoritativen Daten darstellen,
+- Reichweiten nur aus Serverwerten visualisieren,
+- Kampfberichte verständlich anzeigen,
+- eine gleichwertige Tastatur- und Listenbedienung bieten.
 
 ### Server
 
-Der Server muss Schiff und Flotte autoritativ verwalten, Befehle validieren, Bewegungs- und Kampfzustände deterministisch auswerten, Zufall kontrollieren, Schäden buchen und Fog of War filtern.
+Der Server muss:
+
+- Schiff, Flotte und lokale XY-Position autoritativ verwalten,
+- Kontextaktionen und Befehle validieren,
+- Bewegungs-, Begegnungs- und Kampfzustände deterministisch auswerten,
+- Zufall kontrollieren,
+- Schäden und Verluste buchen,
+- Fog of War filtern,
+- keine Berechtigung oder Information über Aktionslisten leaken.
 
 ## Offene Balancingfragen
 
 1. Welche konkreten Schiffstypen und Module gehören zum MVP?
 2. Wie wird Versorgungsreichweite numerisch bestimmt?
-3. Welche Kampfrundenlänge und Zufallsverteilung gelten?
-4. Wie funktionieren Abfangen, Blockaden und Verstärkung genau?
-5. Welche Schäden können außerhalb einer Werft repariert werden?
+3. Welche Sensor-, Abfang-, Gefechts- und Waffenreichweiten gelten?
+4. Wie wirken die einzelnen Flottenhaltungen und Prioritäten?
+5. Welche Kampfrundenlänge und Zufallsverteilung gelten?
+6. Wie funktionieren Blockaden, Verfolgung und Verstärkung genau?
+7. Welche Schäden können außerhalb einer Werft repariert werden?
 
 ## Akzeptanzkriterien
 
 - Schiffe, Flotten und Befehle sind getrennte Entitäten.
 - Spieler und AI verwenden dieselben Flottenbefehle.
-- Reisen und Kämpfe sind serverautoritativ und deterministisch reproduzierbar.
+- Flotten besitzen autoritative lokale XY-Positionen.
+- Eine ausgewählte Flotte kann freie Punkte und Objekte über ein einheitliches Kontextaktionsmodell adressieren.
+- Reisen, Begegnungen und Kämpfe sind serverautoritativ und deterministisch reproduzierbar.
+- Sensor-, Abfang-, Gefechts- und Waffenreichweite sind getrennt.
+- Optische 3D-Nähe startet keinen Kampf.
 - Versorgung begrenzt Einsätze ohne permanente Mikromanagementpflicht.
 - Rückzug, Schäden, Reparatur und dauerhafte Verluste sind geregelt.
 - Kampf überträgt nicht automatisch territorialen Besitz.
@@ -221,3 +362,4 @@ Der Server muss Schiff und Flotte autoritativ verwalten, Befehle validieren, Bew
 - [Besitz und Kontrolle](../02-galaxy/besitz-und-kontrolle.md)
 - [Wirtschaft und Versorgung](../06-economy/wirtschaft-und-versorgung.md)
 - [Diplomatie und Krieg](../09-diplomacy/diplomatie-und-krieg.md)
+- [Raumansichten und Flotteninteraktion](../12-ui-ux/raumansichten-und-flotteninteraktion.md)

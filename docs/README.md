@@ -22,6 +22,7 @@ Der vollständige MVP-Status und die Traceability stehen in [`DOCUMENTATION-STAT
 | `09-diplomacy/` | Kontakte, Beziehungen, Verträge und Krieg |
 | `10-events/` | Ereignisse, Anomalien, Entscheidungen und Krisen |
 | `11-campaign/` | Kampagnenstruktur, Sieg, Niederlage und Endgame |
+| `12-ui-ux/` | Game Shell, 3D-Raumansichten, Fenster, Komponenten, Lokalisierung und Begriffskatalog |
 
 ## Verbindliche Regeln
 
@@ -30,3 +31,4 @@ Der vollständige MVP-Status und die Traceability stehen in [`DOCUMENTATION-STAT
 - Zentrale Begriffe stehen im [Glossar](../glossary.md).
 - Grundlegende Entscheidungen werden unter [`decisions/`](../decisions/README.md) festgehalten.
 - Fachliche Verträge werden unter [`contracts/`](../contracts/README.md) abgeleitet.
+- Die Raumdarstellung und das UI-Grundmodell folgen [Decision 0007](../decisions/0007-client-ui-rendering-und-lokalisierung.md).

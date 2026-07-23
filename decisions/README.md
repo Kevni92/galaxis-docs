@@ -29,4 +29,5 @@ NNNN-kurzer-titel.md
 - [0003 – MVP-Simulations- und Schnittstellenmodell](0003-mvp-simulations-und-schnittstellenmodell.md) – angenommen
 - [0004 – Versionierte Balancing-Schicht](0004-versionierte-balancing-schicht.md) – angenommen
 - [0005 – A0-Servertechnologiestack und Architekturgrenzen](0005-a0-server-technologiestack.md) – angenommen
-- [0006 – Alpha-Clienttechnologiestack](0006-alpha-client-technologiestack.md) – angenommen
+- [0006 – Alpha-Clienttechnologiestack](0006-alpha-client-technologiestack.md) – ersetzt durch 0007
+- [0007 – Client-UX, 3D-Raumdarstellung und Lokalisierung](0007-client-ui-rendering-und-lokalisierung.md) – angenommen

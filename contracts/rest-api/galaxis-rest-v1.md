@@ -4,7 +4,7 @@ Status: Freigegeben
 
 ## Zweck
 
-Dieser Vertrag definiert die implementierungsunabhängigen Anforderungen an die REST-Schnittstelle zwischen Galaxis-Server und Clients. Der Server bleibt für Spielzustand, Zeit, Wissen, Berechtigungen und Befehlsausführung autoritativ.
+Dieser Vertrag definiert die implementierungsunabhängigen Anforderungen an die REST-Schnittstelle zwischen Galaxis-Server und Clients. Der Server bleibt für Spielzustand, Zeit, Wissen, Berechtigungen, Positionen, Kontextaktionen und Befehlsausführung autoritativ.
 
 ## Grundprinzipien
 
@@ -17,6 +17,8 @@ Dieser Vertrag definiert die implementierungsunabhängigen Anforderungen an die 
 - Der Client darf keine lokale Zustandsänderung als bestätigt behandeln, bevor der Server sie angenommen hat.
 - Jede Antwort ist nach Identität, Kampagnenzugriff, kontrolliertem Reich und dessen Wissen gefiltert.
 - Spieler- und AI-Controller verwenden fachlich dieselben Befehlsressourcen.
+- Renderdaten sind Präsentationshinweise und keine zusätzliche Regelquelle.
+- Fachlich relevante lokale Positionen werden als zweidimensionale XY-Koordinaten übertragen.
 
 ## Versionierung
 
@@ -84,14 +86,15 @@ Hauptressourcen:
 - Kampagnen,
 - Reiche,
 - Galaxie und bekannte Sternensysteme,
-- Himmelskörper,
+- Himmelskörper und künstliche Raumobjekte,
 - Kolonien und Bauaufträge,
 - Bevölkerung und Beschäftigung,
 - Bestände, Produktion, Transporte und Haushalt,
 - Forschung und Technologien,
-- Schiffe, Flotten, Reisen und Kämpfe,
+- Schiffe, Flotten, lokale Positionen, Reisen und Kämpfe,
 - Beziehungen, Angebote, Verträge und Kriege,
 - Ereignisse, Anomalien, Krisen und Entscheidungen,
+- Kontextaktionen,
 - Befehle,
 - Rückkehr- und Abschlussberichte.
 
@@ -115,14 +118,66 @@ Liefert einen kompakten Einstieg:
 - laufende Befehle,
 - Linkrelationen zu Detailressourcen.
 
-### Galaxie und Systeme
+### Galaxie
 
 ```text
 GET /api/v1/campaigns/{campaignId}/galaxy
-GET /api/v1/campaigns/{campaignId}/systems/{systemId}
 ```
 
-Die Antwort enthält ausschließlich bekannte Systeme, Verbindungen und Eigenschaften. Unbekannte IDs, Objektzahlen und verborgene Felder werden nicht übertragen.
+Die Antwort enthält ausschließlich bekannte Systeme, bekannte Verbindungen, zulässige Namen, Wissensstände und freigegebene Darstellungsdaten. Unbekannte IDs, Objektzahlen und verborgene Felder werden nicht übertragen.
+
+Ein sichtbares System kann mindestens enthalten:
+
+```json
+{
+  "id": "sys_12",
+  "knowledgeLevel": "located",
+  "displayName": "Tau Ceti",
+  "galaxyPosition": {
+    "x": 42.0,
+    "y": -11.5,
+    "z": 3.0
+  },
+  "renderKind": "yellow_star_system",
+  "links": {
+    "self": "/api/v1/campaigns/cmp_1/systems/sys_12"
+  }
+}
+```
+
+`galaxyPosition.z` darf für die Darstellung verwendet werden. Interstellare Erreichbarkeit folgt weiterhin ausschließlich den übertragenen Verbindungen.
+
+### Sternensystem und Raumobjekte
+
+```text
+GET /api/v1/campaigns/{campaignId}/systems/{systemId}
+GET /api/v1/campaigns/{campaignId}/systems/{systemId}/objects
+GET /api/v1/campaigns/{campaignId}/space-objects/{objectId}
+```
+
+Die Systemantwort liefert nur sichtbare Objekte. Ein lokal positioniertes Objekt enthält mindestens:
+
+```json
+{
+  "id": "pln_3",
+  "objectType": "planet",
+  "knowledgeLevel": "explored",
+  "displayName": "Aurora III",
+  "systemId": "sys_12",
+  "localPosition": {
+    "x": 120.5,
+    "y": -44.0
+  },
+  "renderKind": "terrestrial_planet",
+  "links": {
+    "self": "/api/v1/campaigns/cmp_1/space-objects/pln_3"
+  }
+}
+```
+
+`localPosition` ist fachlich. `renderKind`, visuelle Rotation, Material- oder Animationshinweise sind präsentational und dürfen keine unbekannte Eigenschaft offenlegen.
+
+Unbekannte Objekte werden nicht als Platzhalter, leere Orbitlinie oder unsichtbare Picking-Fläche übertragen.
 
 ### Reichsbereiche
 
@@ -178,8 +233,8 @@ Antwort:
   "changes": [
     {
       "version": 1845,
-      "type": "colony.updated",
-      "resource": "/api/v1/campaigns/cmp_1/colonies/col_7"
+      "type": "fleet.position.updated",
+      "resource": "/api/v1/campaigns/cmp_1/fleets/flt_9"
     }
   ]
 }
@@ -195,6 +250,60 @@ GET /changes?after=1850&waitSeconds=20
 
 Dies bleibt eine zustandslose HTTP-Abfrage und ist keine Voraussetzung für WebSockets.
 
+## Kontextaktionen
+
+Der Client darf mögliche Befehle für eine Auswahl und ein Ziel abfragen:
+
+```text
+POST /api/v1/campaigns/{campaignId}/context-actions
+```
+
+Beispiel für einen ausgewählten Flottenkontext und einen Planeten:
+
+```json
+{
+  "selection": {
+    "fleetIds": ["flt_9"]
+  },
+  "target": {
+    "type": "object",
+    "objectId": "pln_3"
+  },
+  "expectedStateVersion": 1842
+}
+```
+
+Antwort:
+
+```json
+{
+  "stateVersion": 1842,
+  "actions": [
+    {
+      "actionId": "fleet.move_to_object",
+      "labelKey": "fleet.action.move_to_object",
+      "enabled": true,
+      "commandType": "fleet.move.local",
+      "preview": {
+        "duration": 240
+      }
+    },
+    {
+      "actionId": "fleet.colonize",
+      "labelKey": "fleet.action.colonize",
+      "enabled": false,
+      "disabledReason": "COLONY_CAPABILITY_REQUIRED",
+      "commandType": "fleet.colonize",
+      "confirmationRequired": true
+    }
+  ]
+}
+```
+
+Kontextaktionen sind eine wissensgefilterte Momentaufnahme. Der Server validiert den späteren Befehl vollständig erneut.
+
+Ein deaktivierter Grund darf nur so genau sein, wie das kontrollierte Reich die Ursache kennen darf. Nicht sichtbare Ziele liefern keine Aktionsliste, die ihre Existenz bestätigt.
+
 ## Befehlsübermittlung
 
 Fachliche Änderungen werden über Befehlsressourcen eingereicht:
@@ -203,13 +312,53 @@ Fachliche Änderungen werden über Befehlsressourcen eingereicht:
 POST /api/v1/campaigns/{campaignId}/commands
 ```
 
-Beispiel:
+### Lokale Flottenbewegung zu freier Position
 
 ```json
 {
   "clientCommandId": "01J...",
   "empireId": "emp_1",
-  "type": "fleet.move",
+  "type": "fleet.move.local",
+  "expectedStateVersion": 1842,
+  "payload": {
+    "fleetId": "flt_9",
+    "systemId": "sys_1",
+    "target": {
+      "type": "position",
+      "x": 160.0,
+      "y": -12.5
+    }
+  }
+}
+```
+
+### Lokale Flottenbewegung zu Objektanker
+
+```json
+{
+  "clientCommandId": "01K...",
+  "empireId": "emp_1",
+  "type": "fleet.move.local",
+  "expectedStateVersion": 1842,
+  "payload": {
+    "fleetId": "flt_9",
+    "systemId": "sys_1",
+    "target": {
+      "type": "object_anchor",
+      "objectId": "pln_3",
+      "anchor": "orbit"
+    }
+  }
+}
+```
+
+### Interstellare Flottenbewegung
+
+```json
+{
+  "clientCommandId": "01L...",
+  "empireId": "emp_1",
+  "type": "fleet.move.interstellar",
   "expectedStateVersion": 1842,
   "payload": {
     "fleetId": "flt_9",
@@ -264,14 +413,14 @@ Jeder Befehl wird mindestens geprüft auf:
 1. gültige Session,
 2. Kampagnenzugriff,
 3. Controller- und Reichsberechtigung,
-4. bekannte und zulässige Zielressourcen,
+4. bekannte und zulässige Zielressourcen oder Zielkoordinaten,
 5. syntaktisch gültigen Befehlstyp und Payload,
 6. fachliche Voraussetzungen,
-7. verfügbare Ressourcen und Kapazitäten,
+7. verfügbare Ressourcen, Fähigkeiten und Kapazitäten,
 8. erwartete Zustandsversion, sofern erforderlich,
 9. Idempotenz.
 
-Der Client erhält keine Fehlermeldung, die unbekannte Ressourcen oder fremde Geheimnisse bestätigt.
+Der Client erhält keine Fehlermeldung, die unbekannte Ressourcen, verborgene Objekte oder fremde Geheimnisse bestätigt.
 
 ## Nebenläufigkeit
 
@@ -291,7 +440,7 @@ Alle fachlichen und technischen Fehler verwenden ein gemeinsames Format:
     "correlationId": "cor_...",
     "details": [
       {
-        "field": "payload.targetSystemId",
+        "field": "payload.target.x",
         "reason": "TARGET_NOT_REACHABLE"
       }
     ],
@@ -343,6 +492,8 @@ GET /api/v1/campaigns/{campaignId}/reports/campaign-final
 
 Rückkehrberichte sind serverseitig priorisierte Zusammenfassungen. Sie ersetzen nicht den autoritativen Detailzustand und enthalten nur Wissen des Reiches.
 
+Meldungen dürfen Linkrelationen liefern, mit denen der Client Galaxie- oder Systemansicht, Objekt und modales Detailfenster direkt fokussiert.
+
 ## Administrationsschnittstellen
 
 Administrative Operationen werden getrennt von regulären Spielbefehlen bereitgestellt und benötigen eigene Berechtigungen. Sie dürfen nicht über normale Reichscontroller erreichbar sein.
@@ -360,7 +511,9 @@ Der Client muss:
 - `202` und Befehlsstatus unterstützen,
 - Zustandsversionen, ETags und Änderungssynchronisation nutzen,
 - unbekannte Felder tolerieren,
-- Fehlercodes in verständliche Rückmeldungen übersetzen,
+- Fehlercodes in verständliche lokalisierte Rückmeldungen übersetzen,
+- fachliche XY-Position und visuelle 3D-Transformation trennen,
+- Kontextaktionen nicht aus unbestätigter lokaler Regel ableiten,
 - niemals Informationen aus fehlenden oder verborgenen Feldern erraten.
 
 ## Anforderungen an Server
@@ -368,7 +521,7 @@ Der Client muss:
 Der Server muss:
 
 - alle Antworten nach Zugriff und Reichswissen filtern,
-- Befehle idempotent und deterministisch validieren,
+- lokale Positionen, Kontextaktionen und Befehle idempotent und deterministisch validieren,
 - Zustandsänderungen atomar versionieren,
 - Änderungshistorie für einen dokumentierten Zeitraum bereitstellen,
 - sichere Fehler ohne Informationslecks liefern,
@@ -384,13 +537,17 @@ Diese Punkte ändern den fachlichen Vertrag nicht und werden bei der OpenAPI-Ums
 3. Aufbewahrungszeit der Änderungshistorie,
 4. genaue Ressourcenaufteilung großer Antworten,
 5. Rate-Limits und technische Größenlimits,
-6. OpenAPI-Dateistruktur und Codegenerierung.
+6. OpenAPI-Dateistruktur und Codegenerierung,
+7. konkrete Zusammenfassung von Renderhinweisen in Katalog- oder Ressourcenpayloads,
+8. Transportform der Kontextaktionsvorschau.
 
 ## Akzeptanzkriterien
 
 - Ressourcenmodell und Hauptoperationen sind fachlich definiert.
 - Authentifizierung, Kampagnenzugriff und Reichscontroller sind getrennt.
 - Spielzustand ist reichsspezifisch und versioniert abrufbar.
+- Sternensystemobjekte besitzen wissensgefilterte fachliche XY-Positionen und präsentationale Renderhinweise.
+- Kontextaktionen für freie Positionen und Objekte sind serverautoritativ abfragbar.
 - Befehle sind idempotent, asynchron verfolgbar und serverautoritativ.
 - Fehlerformat, Statuscodes, Pagination und Konflikte sind einheitlich.
 - Inkrementelle Aktualisierung funktioniert über REST und benötigt keine WebSocket-Schnittstelle.
@@ -399,6 +556,8 @@ Diese Punkte ändern den fachlichen Vertrag nicht und werden bei der OpenAPI-Ums
 ## Fachliche Grundlagen
 
 - [Zeitmodell](../../docs/01-gameplay/zeitmodell.md)
+- [Sternensysteme und Himmelskörper](../../docs/02-galaxy/sternensysteme-und-himmelskoerper.md)
+- [Bewegung und räumliche Verbindungen](../../docs/02-galaxy/bewegung-und-verbindungen.md)
 - [Erkundung und Informationsstände](../../docs/02-galaxy/erkundung-und-informationsstaende.md)
 - [Reichsverwaltung](../../docs/03-empires/reichsverwaltung.md)
 - [Planeten und Kolonien](../../docs/04-planets/planeten-und-kolonien.md)
@@ -409,3 +568,5 @@ Diese Punkte ändern den fachlichen Vertrag nicht und werden bei der OpenAPI-Ums
 - [Diplomatie und Krieg](../../docs/09-diplomacy/diplomatie-und-krieg.md)
 - [Ereignisse und Krisen](../../docs/10-events/ereignisse-und-krisen.md)
 - [Endgame und Abschluss](../../docs/11-campaign/endgame-und-abschluss.md)
+- [UI und UX](../../docs/12-ui-ux/README.md)
+- [UI-Vertrag für Raumansichten](../ui/raumansichten-auswahl-und-kontextaktionen.md)

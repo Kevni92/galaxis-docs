@@ -2,11 +2,11 @@
 
 Dieses Repository ist die verbindliche fachliche Quelle für das Spiel **Galaxis**.
 
-Hier wird beschrieben, **wie das Spiel funktioniert**: Spielregeln, Entitäten, Befehle, Zustände, Wechselwirkungen und fachliche Anforderungen. Konkreter Client- oder Servercode gehört nicht in dieses Repository.
+Hier wird beschrieben, **wie das Spiel funktioniert**: Spielregeln, Entitäten, Befehle, Zustände, Wechselwirkungen, Benutzererlebnis und fachliche Anforderungen. Konkreter Client- oder Servercode gehört nicht in dieses Repository.
 
 ## Dokumentationsstatus
 
-Die fachliche MVP-Dokumentation ist [vollständig geprüft und freigegeben](DOCUMENTATION-STATUS.md).
+Die fachliche MVP-Dokumentation ist [vollständig geprüft und freigegeben](DOCUMENTATION-STATUS.md). Die UI-/UX-Grundlage mit 3D-Raumansichten, modalem Fenstersystem, Lokalisierung und Begriffskatalog ist unter [`docs/12-ui-ux/`](docs/12-ui-ux/README.md) beschrieben.
 
 ## Implementierungsroadmap
 
@@ -30,6 +30,7 @@ Diese Dokumente müssen von Agenten in allen Galaxis-Repositories gelesen und be
 3. [Kommunikation einer Agenten-Session](AGENT-COMMUNICATION.md) – Aufgabenverständnis, Abschlussbericht und nächste Empfehlung
 4. [Teststrategie](TESTING.md) – schnelle, risikobasierte Tests und CI-Stufen
 5. [Quellcodedokumentation](SOURCE-CODE.md) – kurze Kommentare, Fachverweise und Modulnavigation
+6. [Decision 0007](decisions/0007-client-ui-rendering-und-lokalisierung.md) – Client-UX, 3D-Raumdarstellung und Lokalisierung
 
 ## Unverbindliche Ideen
 
@@ -42,5 +43,5 @@ Die Dokumentation soll:
 - alle Spielmechaniken eindeutig und widerspruchsfrei beschreiben,
 - als Grundlage für Issues in `galaxis-client` und `galaxis-server` dienen,
 - von Menschen, Claude und Codex schnell verstanden werden,
-- die spätere REST-Schnittstelle fachlich vorbereiten,
+- die spätere REST- und UI-Schnittstelle fachlich vorbereiten,
 - Entscheidungen langfristig nachvollziehbar machen.
