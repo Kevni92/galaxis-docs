@@ -217,8 +217,10 @@ Für alle Arbeits- und Agenten-Sessions gilt:
    ```
 
    `baseRefName` muss exakt `main` sein. Andernfalls wird nicht weitergearbeitet, bis der PR korrigiert ist.
-10. Nach erfolgreichem Merge darf der Feature-Branch erst gelöscht werden, wenn seine relevanten Änderungen nachweislich in `origin/main` enthalten sind und kein offener PR den Branch mehr verwendet.
-11. Bestehende versehentlich gestapelte Branches werden ohne Umschreiben von `main` repariert: Ein neuer Reparaturbranch startet vom aktuellen `origin/main` und übernimmt ausschließlich die fehlenden normalen Commits. Merge-Commits der alten Stapelkette werden nicht übernommen.
+10. Jeder PR, der ein Issue vollständig umsetzt, muss in der PR-Beschreibung ein GitHub-Closing-Keyword in eigener Zeile enthalten, bevorzugt `Closes #<ISSUE-NUMMER>`. Eine Feature-ID, ein Link, eine Erwähnung im Titel oder Text wie „Issue #…“ ersetzt dieses Closing-Keyword nicht. Werden mehrere Issues vollständig erledigt, wird jedes mit einem eigenen Closing-Keyword angegeben.
+11. Vor Abschluss der Agenten-Session wird mit `gh pr view <PR-NUMMER> --json body` geprüft, dass das korrekte Closing-Keyword tatsächlich in der veröffentlichten PR-Beschreibung steht. Fehlt es, muss die PR-Beschreibung vor dem Abschluss korrigiert werden.
+12. Nach erfolgreichem Merge darf der Feature-Branch erst gelöscht werden, wenn seine relevanten Änderungen nachweislich in `origin/main` enthalten sind und kein offener PR den Branch mehr verwendet.
+13. Bestehende versehentlich gestapelte Branches werden ohne Umschreiben von `main` repariert: Ein neuer Reparaturbranch startet vom aktuellen `origin/main` und übernimmt ausschließlich die fehlenden normalen Commits. Merge-Commits der alten Stapelkette werden nicht übernommen.
 
 ### Schritt 9: Testen und Review
 
@@ -231,13 +233,14 @@ Die PR-Beschreibung nennt:
 - Änderung und Abgrenzung,
 - ausgeführte Tests,
 - bewusst nicht ausgeführte Tests mit Begründung,
-- mögliche Risiken oder Folgearbeiten.
+- mögliche Risiken oder Folgearbeiten,
+- für jedes vollständig umgesetzte Issue ein Closing-Keyword, bevorzugt `Closes #<ISSUE-NUMMER>`.
 
 ### Schritt 10: Merge und Nachführung
 
 Nach dem Merge:
 
-- werden betroffene Issues aktualisiert oder geschlossen,
+- werden die durch Closing-Keywords verknüpften Issues automatisch geschlossen und ihr Status kontrolliert,
 - werden neue Erkenntnisse in `galaxis-docs` zurückgeführt,
 - wird bei Vertragsänderungen geprüft, ob Client und Server angepasst werden müssen,
 - wird das Docs-Submodule in Client und Server bewusst auf einen freigegebenen Commit aktualisiert.
@@ -295,6 +298,7 @@ Eine Aufgabe ist abgeschlossen, wenn:
 - Modulnavigation und Dokumentation aktualisiert sind,
 - keine bekannten relevanten Fehler verschwiegen werden,
 - das Issue und die PR die Feature-ID und Quellen enthalten,
+- die PR-Beschreibung das korrekte Closing-Keyword für jedes vollständig erledigte Issue enthält,
 - der PR nach `main` gerichtet ist und kein Folge-Issue auf seinem Feature-Branch begonnen wurde.
 
 ## 8. Rückfluss von Erkenntnissen
