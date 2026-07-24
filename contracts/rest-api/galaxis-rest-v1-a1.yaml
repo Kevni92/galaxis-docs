@@ -1,0 +1,1262 @@
+openapi: 3.1.0
+info:
+  title: Galaxis REST API v1 – A1
+  version: 1.1.0
+  license:
+    name: Galaxis project documentation
+    url: https://github.com/Kevni92/galaxis-docs
+  description: |
+    Maschinenlesbarer A1-Vertrag für Kampagnenerstellung, Kampagnenzustand,
+    bekanntes Heimatsternsystem, Heimatkolonie, Startbevölkerung und
+    Grundversorgung. Der A0-Vertrag für Health und Authentifizierung steht in
+    galaxis-rest-v1.yaml. Beide Dateien bilden gemeinsam Galaxis REST API v1.
+servers:
+  - url: /
+    description: Server-relative URL; außerhalb lokaler Entwicklung über HTTPS.
+tags:
+  - name: Campaigns
+    description: Singleplayer-Kampagnen erstellen, auflisten und laden.
+  - name: Campaign State
+    description: Wissensgefilterte A1-Zustandsressourcen.
+  - name: Population
+    description: A1-Zusammenfassungen für Bevölkerung und Grundversorgung.
+paths:
+  /api/v1/campaigns:
+    get:
+      tags: [Campaigns]
+      operationId: listCampaigns
+      summary: Eigene Kampagnen auflisten
+      description: Liefert nur Kampagnen, auf die der aktuelle Account zugreifen darf.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Kampagnenliste.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignListResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/CampaignListResponse'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: [Campaigns]
+      operationId: createCampaign
+      summary: Singleplayer-Kampagne erstellen
+      description: |
+        Erzeugt atomar eine A1-Kampagne mit deterministischer Startgalaxie,
+        Startreich, Controllerzuordnung, Heimatplanet, Heimatkolonie,
+        Startbevölkerung und Grundversorgung. Eine identische Wiederholung mit
+        demselben Idempotenzschlüssel liefert dieselbe Kampagne.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCampaignRequest'
+            examples:
+              default:
+                $ref: '#/components/examples/CreateCampaignRequest'
+      responses:
+        '201':
+          description: Kampagne wurde erstellt oder identisch idempotent wiederholt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/CampaignResponse'
+        '400':
+          $ref: '#/components/responses/InvalidCampaign'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '409':
+          $ref: '#/components/responses/CampaignCreateConflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/campaigns/{campaignId}:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+    get:
+      tags: [Campaigns]
+      operationId: getCampaign
+      summary: Kampagne laden
+      description: Liefert Kampagnengrunddaten nur bei gültigem Zugriff.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Kampagnengrunddaten.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/CampaignResponse'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/campaigns/{campaignId}/state:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+      - $ref: '#/components/parameters/IfNoneMatch'
+    get:
+      tags: [Campaign State]
+      operationId: getCampaignState
+      summary: Kompakten A1-Kampagnenzustand laden
+      description: |
+        Liefert Kampagnenzeit, Laufzustand, kontrolliertes Reich,
+        Zustandsversion und stabile Linkrelationen. Die Antwort ist privat und
+        nach Account, Kampagnenzugriff und kontrolliertem Reich gefiltert.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wissensgefilterter Kampagnenzustand.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignStateResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/CampaignStateResponse'
+        '304':
+          description: Der sichtbare Zustand ist gegenüber If-None-Match unverändert.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/campaigns/{campaignId}/galaxy:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+      - $ref: '#/components/parameters/IfNoneMatch'
+    get:
+      tags: [Campaign State]
+      operationId: getKnownGalaxy
+      summary: Bekannte A1-Galaxie laden
+      description: |
+        Liefert ausschließlich bekannte Systeme und bekannte Verbindungen.
+        Unbekannte IDs, Objektzahlen, Namen und Renderdaten werden nicht übertragen.
+        Die visuelle Z-Position erzeugt keine fachliche Route.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wissensgefilterte Galaxieübersicht.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GalaxyOverviewResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/GalaxyOverviewResponse'
+        '304':
+          description: Der sichtbare Zustand ist gegenüber If-None-Match unverändert.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/campaigns/{campaignId}/systems/{systemId}:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+      - $ref: '#/components/parameters/SystemId'
+      - $ref: '#/components/parameters/IfNoneMatch'
+    get:
+      tags: [Campaign State]
+      operationId: getKnownSystem
+      summary: Bekanntes Sternensystem laden
+      description: |
+        Liefert ausschließlich sichtbare Sterne und Planeten. Jedes sichtbare
+        Raumobjekt besitzt eine stabile ID, Wissensstufe, einen sichtbaren
+        Namensschlüssel, eine autoritative lokale XY-Position, einen rein
+        präsentationalen Renderhinweis und stabile Linkrelationen.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wissensgefiltertes Sternensystem.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemDetailResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/SystemDetailResponse'
+        '304':
+          description: Der sichtbare Zustand ist gegenüber If-None-Match unverändert.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/campaigns/{campaignId}/empires/{empireId}/colonies:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+      - $ref: '#/components/parameters/EmpireId'
+      - $ref: '#/components/parameters/IfNoneMatch'
+    get:
+      tags: [Campaign State]
+      operationId: listEmpireColonies
+      summary: Sichtbare Kolonien eines Reiches laden
+      description: |
+        Liefert ausschließlich Kolonien, die der aktuelle Reichskontext sehen darf,
+        einschließlich Heimatplanet und Linkrelationen zu System, Bevölkerung und
+        Grundversorgung.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wissensgefilterte Kolonieübersicht.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColonyOverviewResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/ColonyOverviewResponse'
+        '304':
+          description: Der sichtbare Zustand ist gegenüber If-None-Match unverändert.
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Cache-Control:
+              $ref: '#/components/headers/PrivateNoCache'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/campaigns/{campaignId}/empires/{empireId}/population:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+      - $ref: '#/components/parameters/EmpireId'
+    get:
+      tags: [Population]
+      operationId: getEmpirePopulationSummary
+      summary: A1-Bevölkerungszusammenfassung laden
+      description: Liefert die aggregierte Startbevölkerung des sichtbaren Heimatkoloniekontexts.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Bevölkerungszusammenfassung.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PopulationSummaryResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/PopulationSummaryResponse'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/campaigns/{campaignId}/empires/{empireId}/economy:
+    parameters:
+      - $ref: '#/components/parameters/CampaignId'
+      - $ref: '#/components/parameters/EmpireId'
+    get:
+      tags: [Population]
+      operationId: getEmpireEconomySummary
+      summary: A1-Grundversorgung laden
+      description: Liefert Bestand und Reichweite der A1-Grundversorgung für die Heimatkolonie.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Grundversorgungszusammenfassung.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EconomySummaryResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/EconomySummaryResponse'
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '404':
+          $ref: '#/components/responses/ResourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque-session-token
+      description: Bearer-Token aus POST /api/v1/auth/sessions im A0-Vertrag.
+
+  parameters:
+    CampaignId:
+      name: campaignId
+      in: path
+      required: true
+      description: Stabile, opake Kampagnen-ID.
+      schema:
+        $ref: '#/components/schemas/CampaignId'
+    SystemId:
+      name: systemId
+      in: path
+      required: true
+      description: Stabile, opake Sternensystem-ID.
+      schema:
+        $ref: '#/components/schemas/SystemId'
+    EmpireId:
+      name: empireId
+      in: path
+      required: true
+      description: Stabile, opake Reichs-ID.
+      schema:
+        $ref: '#/components/schemas/EmpireId'
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: |
+        Vom Client pro fachlichem Kampagnenerstellungsversuch erzeugter Schlüssel.
+        Identische Wiederholungen liefern dieselbe Kampagne; abweichende Daten mit
+        demselben Schlüssel werden als Konflikt abgelehnt.
+      schema:
+        type: string
+        minLength: 1
+      example: 01JABCDEF123456789
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      description: Zuletzt empfangener ETag derselben reichsspezifischen Ressource.
+      schema:
+        type: string
+        minLength: 1
+      example: 'W/"state-1"'
+
+  headers:
+    ETag:
+      description: Schwacher ETag des sichtbaren, reichsspezifischen Zustands.
+      schema:
+        type: string
+      example: 'W/"state-1"'
+    PrivateNoCache:
+      description: Verhindert Vermischung privater Zustände in gemeinsamen Caches.
+      schema:
+        type: string
+        enum: [private, no-cache]
+
+  schemas:
+    CreateCampaignRequest:
+      type: object
+      additionalProperties: false
+      required: [seed, timeProfile]
+      properties:
+        seed:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 9007199254740991
+          description: Deterministischer Seed im sicheren JavaScript-Integerbereich.
+        timeProfile:
+          type: string
+          minLength: 1
+          description: Vom Server unterstütztes Kampagnenzeitprofil.
+
+    CampaignResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - campaignId
+        - type
+        - status
+        - seed
+        - timeProfile
+        - balancingVersion
+        - catalogVersion
+        - balancingHash
+        - stateVersion
+        - createdAt
+      properties:
+        campaignId:
+          $ref: '#/components/schemas/CampaignId'
+        type:
+          type: string
+          enum: [singleplayer]
+        status:
+          type: string
+          enum: [running]
+        seed:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 9007199254740991
+        timeProfile:
+          type: string
+          minLength: 1
+        balancingVersion:
+          type: string
+          minLength: 1
+        catalogVersion:
+          type: string
+          minLength: 1
+        balancingHash:
+          type: string
+          minLength: 1
+        stateVersion:
+          $ref: '#/components/schemas/StateVersion'
+        createdAt:
+          $ref: '#/components/schemas/Instant'
+
+    CampaignListResponse:
+      type: object
+      additionalProperties: false
+      required: [campaigns]
+      properties:
+        campaigns:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignResponse'
+
+    CampaignStateResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - campaignId
+        - status
+        - timeProfile
+        - campaignTimeMs
+        - stateVersion
+        - generatedAt
+        - balancingVersion
+        - balancingHash
+        - controlledEmpire
+        - links
+      properties:
+        campaignId:
+          $ref: '#/components/schemas/CampaignId'
+        status:
+          type: string
+          enum: [running]
+        timeProfile:
+          type: string
+          minLength: 1
+        campaignTimeMs:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Autoritative Kampagnenzeit in Millisekunden.
+        stateVersion:
+          $ref: '#/components/schemas/StateVersion'
+        generatedAt:
+          $ref: '#/components/schemas/Instant'
+        balancingVersion:
+          type: string
+          minLength: 1
+        balancingHash:
+          type: string
+          minLength: 1
+        controlledEmpire:
+          $ref: '#/components/schemas/ControlledEmpireSummary'
+        links:
+          $ref: '#/components/schemas/LinkMap'
+
+    ControlledEmpireSummary:
+      type: object
+      additionalProperties: false
+      required: [empireId, name, canControl]
+      properties:
+        empireId:
+          $ref: '#/components/schemas/EmpireId'
+        name:
+          type: string
+          minLength: 1
+        canControl:
+          type: boolean
+
+    GalaxyOverviewResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - campaignId
+        - stateVersion
+        - generatedAt
+        - startSystemId
+        - knownSystems
+        - knownConnections
+      properties:
+        campaignId:
+          $ref: '#/components/schemas/CampaignId'
+        stateVersion:
+          $ref: '#/components/schemas/StateVersion'
+        generatedAt:
+          $ref: '#/components/schemas/Instant'
+        startSystemId:
+          $ref: '#/components/schemas/SystemId'
+        knownSystems:
+          type: array
+          items:
+            $ref: '#/components/schemas/KnownSystemSummary'
+        knownConnections:
+          type: array
+          items:
+            $ref: '#/components/schemas/KnownConnection'
+
+    KnownSystemSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - systemId
+        - regionId
+        - knowledgeLevel
+        - displayNameKey
+        - galaxyPosition
+        - renderKind
+        - starCount
+        - planetCount
+        - links
+      properties:
+        systemId:
+          $ref: '#/components/schemas/SystemId'
+        regionId:
+          $ref: '#/components/schemas/RegionId'
+        knowledgeLevel:
+          $ref: '#/components/schemas/KnowledgeLevel'
+        displayNameKey:
+          type: string
+          minLength: 1
+          description: Lokalisierungsschlüssel oder sicherer sichtbarer Namensschlüssel.
+        galaxyPosition:
+          $ref: '#/components/schemas/GalaxyPosition'
+        renderKind:
+          type: string
+          minLength: 1
+          description: Rein präsentationale Darstellungsfamilie.
+        starCount:
+          type: integer
+          minimum: 0
+          description: Nur die dem Reich bekannte Anzahl.
+        planetCount:
+          type: integer
+          minimum: 0
+          description: Nur die dem Reich bekannte Anzahl.
+        links:
+          $ref: '#/components/schemas/LinkMap'
+
+    KnownConnection:
+      type: object
+      additionalProperties: false
+      required: [connectionId, fromSystemId, toSystemId, distance]
+      properties:
+        connectionId:
+          $ref: '#/components/schemas/ConnectionId'
+        fromSystemId:
+          $ref: '#/components/schemas/SystemId'
+        toSystemId:
+          $ref: '#/components/schemas/SystemId'
+        distance:
+          type: integer
+          minimum: 1
+
+    SystemDetailResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - campaignId
+        - stateVersion
+        - generatedAt
+        - systemId
+        - regionId
+        - knowledgeLevel
+        - displayNameKey
+        - stars
+        - planets
+        - links
+      properties:
+        campaignId:
+          $ref: '#/components/schemas/CampaignId'
+        stateVersion:
+          $ref: '#/components/schemas/StateVersion'
+        generatedAt:
+          $ref: '#/components/schemas/Instant'
+        systemId:
+          $ref: '#/components/schemas/SystemId'
+        regionId:
+          $ref: '#/components/schemas/RegionId'
+        knowledgeLevel:
+          $ref: '#/components/schemas/KnowledgeLevel'
+        displayNameKey:
+          type: string
+          minLength: 1
+        stars:
+          type: array
+          items:
+            $ref: '#/components/schemas/StarObject'
+        planets:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanetObject'
+        links:
+          $ref: '#/components/schemas/LinkMap'
+
+    StarObject:
+      type: object
+      additionalProperties: false
+      required:
+        - starId
+        - objectType
+        - systemId
+        - knowledgeLevel
+        - displayNameKey
+        - localPosition
+        - renderKind
+        - starClass
+        - links
+      properties:
+        starId:
+          $ref: '#/components/schemas/StarId'
+        objectType:
+          type: string
+          enum: [star]
+        systemId:
+          $ref: '#/components/schemas/SystemId'
+        knowledgeLevel:
+          $ref: '#/components/schemas/KnowledgeLevel'
+        displayNameKey:
+          type: string
+          minLength: 1
+        localPosition:
+          $ref: '#/components/schemas/LocalPosition'
+        renderKind:
+          type: string
+          minLength: 1
+        starClass:
+          type: string
+          minLength: 1
+        links:
+          $ref: '#/components/schemas/LinkMap'
+
+    PlanetObject:
+      type: object
+      additionalProperties: false
+      required:
+        - planetId
+        - objectType
+        - systemId
+        - knowledgeLevel
+        - displayNameKey
+        - localPosition
+        - renderKind
+        - category
+        - size
+        - homeworldEligible
+        - links
+      properties:
+        planetId:
+          $ref: '#/components/schemas/PlanetId'
+        objectType:
+          type: string
+          enum: [planet]
+        systemId:
+          $ref: '#/components/schemas/SystemId'
+        knowledgeLevel:
+          $ref: '#/components/schemas/KnowledgeLevel'
+        displayNameKey:
+          type: string
+          minLength: 1
+        localPosition:
+          $ref: '#/components/schemas/LocalPosition'
+        renderKind:
+          type: string
+          minLength: 1
+        category:
+          type: string
+          minLength: 1
+        size:
+          type: string
+          minLength: 1
+        homeworldEligible:
+          type: boolean
+        links:
+          $ref: '#/components/schemas/LinkMap'
+
+    ColonyOverviewResponse:
+      type: object
+      additionalProperties: false
+      required: [campaignId, empireId, stateVersion, generatedAt, colonies]
+      properties:
+        campaignId:
+          $ref: '#/components/schemas/CampaignId'
+        empireId:
+          $ref: '#/components/schemas/EmpireId'
+        stateVersion:
+          $ref: '#/components/schemas/StateVersion'
+        generatedAt:
+          $ref: '#/components/schemas/Instant'
+        colonies:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColonySummary'
+
+    ColonySummary:
+      type: object
+      additionalProperties: false
+      required:
+        - colonyId
+        - systemId
+        - planetId
+        - isHomeColony
+        - lifecycleState
+        - specialization
+        - planet
+        - links
+      properties:
+        colonyId:
+          $ref: '#/components/schemas/ColonyId'
+        systemId:
+          $ref: '#/components/schemas/SystemId'
+        planetId:
+          $ref: '#/components/schemas/PlanetId'
+        isHomeColony:
+          type: boolean
+        lifecycleState:
+          type: string
+          minLength: 1
+        specialization:
+          type: string
+          minLength: 1
+        planet:
+          $ref: '#/components/schemas/ColonyPlanetSummary'
+        links:
+          $ref: '#/components/schemas/LinkMap'
+
+    ColonyPlanetSummary:
+      type: object
+      additionalProperties: false
+      required: [category, size, knowledgeLevel, displayNameKey, renderKind]
+      properties:
+        category:
+          type: string
+          minLength: 1
+        size:
+          type: string
+          minLength: 1
+        knowledgeLevel:
+          $ref: '#/components/schemas/KnowledgeLevel'
+        displayNameKey:
+          type: string
+          minLength: 1
+        renderKind:
+          type: string
+          minLength: 1
+
+    PopulationSummaryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - campaignId
+        - empireId
+        - colonyId
+        - systemId
+        - stateVersion
+        - generatedAt
+        - totalPopulation
+        - employablePopulation
+        - employedPopulation
+        - unemployedPopulation
+        - nonWorkforcePopulation
+      properties:
+        campaignId:
+          $ref: '#/components/schemas/CampaignId'
+        empireId:
+          $ref: '#/components/schemas/EmpireId'
+        colonyId:
+          $ref: '#/components/schemas/ColonyId'
+        systemId:
+          $ref: '#/components/schemas/SystemId'
+        stateVersion:
+          $ref: '#/components/schemas/StateVersion'
+        generatedAt:
+          $ref: '#/components/schemas/Instant'
+        totalPopulation:
+          type: integer
+          format: int64
+          minimum: 0
+        employablePopulation:
+          type: integer
+          format: int64
+          minimum: 0
+        employedPopulation:
+          type: integer
+          format: int64
+          minimum: 0
+        unemployedPopulation:
+          type: integer
+          format: int64
+          minimum: 0
+        nonWorkforcePopulation:
+          type: integer
+          format: int64
+          minimum: 0
+
+    EconomySummaryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - campaignId
+        - empireId
+        - colonyId
+        - systemId
+        - stateVersion
+        - generatedAt
+        - essentialSupply
+      properties:
+        campaignId:
+          $ref: '#/components/schemas/CampaignId'
+        empireId:
+          $ref: '#/components/schemas/EmpireId'
+        colonyId:
+          $ref: '#/components/schemas/ColonyId'
+        systemId:
+          $ref: '#/components/schemas/SystemId'
+        stateVersion:
+          $ref: '#/components/schemas/StateVersion'
+        generatedAt:
+          $ref: '#/components/schemas/Instant'
+        essentialSupply:
+          $ref: '#/components/schemas/EssentialSupplySummary'
+
+    EssentialSupplySummary:
+      type: object
+      additionalProperties: false
+      required: [quantity, reserved, available, coverageDays]
+      properties:
+        quantity:
+          type: integer
+          format: int64
+          minimum: 0
+        reserved:
+          type: integer
+          format: int64
+          minimum: 0
+        available:
+          type: integer
+          format: int64
+          minimum: 0
+        coverageDays:
+          type: integer
+          minimum: 0
+
+    GalaxyPosition:
+      type: object
+      additionalProperties: false
+      required: [x, y, z]
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        z:
+          type: number
+          format: double
+          description: Nur präsentational; erzeugt keine fachliche Route.
+
+    LocalPosition:
+      type: object
+      additionalProperties: false
+      required: [x, y]
+      description: Autoritative fachliche Position auf der lokalen XY-Ebene.
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+
+    KnowledgeLevel:
+      type: string
+      minLength: 1
+      description: Stabile, lokalisierbare Wissensstufe des kontrollierten Reiches.
+      example: explored
+
+    LinkMap:
+      type: object
+      description: Stabile Linkrelationen; Clients bauen Detail-URLs nicht selbst zusammen.
+      additionalProperties:
+        type: string
+        minLength: 1
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message, correlationId, retryable]
+      properties:
+        code:
+          type: string
+          enum:
+            - INVALID_REQUEST
+            - INVALID_CAMPAIGN
+            - SESSION_INVALID
+            - UNAUTHORIZED
+            - FORBIDDEN
+            - CAMPAIGN_NOT_FOUND
+            - RESOURCE_NOT_FOUND
+            - CONFLICT
+            - CAMPAIGN_CREATE_CONFLICT
+            - CAMPAIGN_INCOMPATIBLE
+            - RATE_LIMITED
+            - INTERNAL_ERROR
+        message:
+          type: string
+          minLength: 1
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        retryable:
+          type: boolean
+        currentStateVersion:
+          type: integer
+          format: int64
+          minimum: 0
+
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [field, reason]
+      properties:
+        field:
+          type: string
+          minLength: 1
+        reason:
+          type: string
+          minLength: 1
+
+    CampaignId: {type: string, minLength: 1, example: cmp_01JABCDEF123456789}
+    EmpireId: {type: string, minLength: 1, example: emp_01JABCDEF123456789}
+    SystemId: {type: string, minLength: 1, example: sys_home}
+    RegionId: {type: string, minLength: 1, example: reg_core}
+    ConnectionId: {type: string, minLength: 1, example: con_01JABCDEF123456789}
+    StarId: {type: string, minLength: 1, example: str_home}
+    PlanetId: {type: string, minLength: 1, example: pln_home}
+    ColonyId: {type: string, minLength: 1, example: col_home}
+    StateVersion: {type: integer, format: int64, minimum: 1, example: 1}
+    CorrelationId: {type: string, minLength: 1, example: cor_01JABCDEF123456789}
+    Instant:
+      type: string
+      format: date-time
+      description: ISO-8601-Zeitpunkt in UTC.
+      example: '2026-07-23T12:00:00Z'
+
+  responses:
+    SessionInvalid:
+      description: Es fehlt eine gültige Bearer-Session.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              $ref: '#/components/examples/SessionInvalid'
+    InvalidCampaign:
+      description: Kampagnenanlage wurde wegen ungültiger Eingaben oder Startdaten abgelehnt.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              $ref: '#/components/examples/InvalidCampaign'
+    ResourceNotFound:
+      description: Ressource existiert nicht oder darf aus Wissensschutz nicht bestätigt werden.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              $ref: '#/components/examples/ResourceNotFound'
+    CampaignCreateConflict:
+      description: Idempotenzschlüssel wurde mit abweichenden Kampagnendaten wiederverwendet.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              $ref: '#/components/examples/CampaignCreateConflict'
+    InternalServerError:
+      description: Unerwarteter Fehler ohne interne Details.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              $ref: '#/components/examples/InternalServerError'
+
+  examples:
+    CreateCampaignRequest:
+      value:
+        seed: 1337
+        timeProfile: standard
+    CampaignResponse:
+      value:
+        campaignId: cmp_01JABCDEF123456789
+        type: singleplayer
+        status: running
+        seed: 1337
+        timeProfile: standard
+        balancingVersion: 0.1.0
+        catalogVersion: 0.1.0
+        balancingHash: sha256:example
+        stateVersion: 1
+        createdAt: '2026-07-23T12:00:00Z'
+    CampaignListResponse:
+      value:
+        campaigns:
+          - campaignId: cmp_01JABCDEF123456789
+            type: singleplayer
+            status: running
+            seed: 1337
+            timeProfile: standard
+            balancingVersion: 0.1.0
+            catalogVersion: 0.1.0
+            balancingHash: sha256:example
+            stateVersion: 1
+            createdAt: '2026-07-23T12:00:00Z'
+    CampaignStateResponse:
+      value:
+        campaignId: cmp_01JABCDEF123456789
+        status: running
+        timeProfile: standard
+        campaignTimeMs: 0
+        stateVersion: 1
+        generatedAt: '2026-07-23T12:00:00Z'
+        balancingVersion: 0.1.0
+        balancingHash: sha256:example
+        controlledEmpire:
+          empireId: emp_01JABCDEF123456789
+          name: Startreich
+          canControl: true
+        links:
+          self: /api/v1/campaigns/cmp_01JABCDEF123456789/state
+          galaxy: /api/v1/campaigns/cmp_01JABCDEF123456789/galaxy
+          colonies: /api/v1/campaigns/cmp_01JABCDEF123456789/empires/emp_01JABCDEF123456789/colonies
+          population: /api/v1/campaigns/cmp_01JABCDEF123456789/empires/emp_01JABCDEF123456789/population
+          economy: /api/v1/campaigns/cmp_01JABCDEF123456789/empires/emp_01JABCDEF123456789/economy
+    GalaxyOverviewResponse:
+      value:
+        campaignId: cmp_01JABCDEF123456789
+        stateVersion: 1
+        generatedAt: '2026-07-23T12:00:00Z'
+        startSystemId: sys_home
+        knownSystems:
+          - systemId: sys_home
+            regionId: reg_core
+            knowledgeLevel: explored
+            displayNameKey: system.home.name
+            galaxyPosition: {x: 0, y: 0, z: 0}
+            renderKind: yellow_star_system
+            starCount: 1
+            planetCount: 3
+            links:
+              self: /api/v1/campaigns/cmp_01JABCDEF123456789/systems/sys_home
+        knownConnections: []
+    SystemDetailResponse:
+      value:
+        campaignId: cmp_01JABCDEF123456789
+        stateVersion: 1
+        generatedAt: '2026-07-23T12:00:00Z'
+        systemId: sys_home
+        regionId: reg_core
+        knowledgeLevel: explored
+        displayNameKey: system.home.name
+        stars:
+          - starId: str_home
+            objectType: star
+            systemId: sys_home
+            knowledgeLevel: explored
+            displayNameKey: star.home.name
+            localPosition: {x: 0, y: 0}
+            renderKind: yellow_star
+            starClass: G
+            links:
+              self: /api/v1/campaigns/cmp_01JABCDEF123456789/systems/sys_home
+        planets:
+          - planetId: pln_home
+            objectType: planet
+            systemId: sys_home
+            knowledgeLevel: explored
+            displayNameKey: planet.home.name
+            localPosition: {x: 120.5, y: -44}
+            renderKind: terrestrial_planet
+            category: terrestrial
+            size: medium
+            homeworldEligible: true
+            links:
+              self: /api/v1/campaigns/cmp_01JABCDEF123456789/systems/sys_home
+              colonies: /api/v1/campaigns/cmp_01JABCDEF123456789/empires/emp_01JABCDEF123456789/colonies
+        links:
+          self: /api/v1/campaigns/cmp_01JABCDEF123456789/systems/sys_home
+          galaxy: /api/v1/campaigns/cmp_01JABCDEF123456789/galaxy
+    ColonyOverviewResponse:
+      value:
+        campaignId: cmp_01JABCDEF123456789
+        empireId: emp_01JABCDEF123456789
+        stateVersion: 1
+        generatedAt: '2026-07-23T12:00:00Z'
+        colonies:
+          - colonyId: col_home
+            systemId: sys_home
+            planetId: pln_home
+            isHomeColony: true
+            lifecycleState: etabliert
+            specialization: neutral
+            planet:
+              category: terrestrial
+              size: medium
+              knowledgeLevel: explored
+              displayNameKey: planet.home.name
+              renderKind: terrestrial_planet
+            links:
+              system: /api/v1/campaigns/cmp_01JABCDEF123456789/systems/sys_home
+              population: /api/v1/campaigns/cmp_01JABCDEF123456789/empires/emp_01JABCDEF123456789/population
+              economy: /api/v1/campaigns/cmp_01JABCDEF123456789/empires/emp_01JABCDEF123456789/economy
+    PopulationSummaryResponse:
+      value:
+        campaignId: cmp_01JABCDEF123456789
+        empireId: emp_01JABCDEF123456789
+        colonyId: col_home
+        systemId: sys_home
+        stateVersion: 1
+        generatedAt: '2026-07-23T12:00:00Z'
+        totalPopulation: 1000000
+        employablePopulation: 600000
+        employedPopulation: 600000
+        unemployedPopulation: 0
+        nonWorkforcePopulation: 400000
+    EconomySummaryResponse:
+      value:
+        campaignId: cmp_01JABCDEF123456789
+        empireId: emp_01JABCDEF123456789
+        colonyId: col_home
+        systemId: sys_home
+        stateVersion: 1
+        generatedAt: '2026-07-23T12:00:00Z'
+        essentialSupply:
+          quantity: 30000
+          reserved: 0
+          available: 30000
+          coverageDays: 30
+    SessionInvalid:
+      value:
+        error:
+          code: SESSION_INVALID
+          message: Es ist keine gültige Session vorhanden.
+          correlationId: cor_01JABCDEF123456789
+          retryable: false
+    InvalidCampaign:
+      value:
+        error:
+          code: INVALID_CAMPAIGN
+          message: Die Kampagne konnte nicht angelegt werden.
+          correlationId: cor_01JABCDEF123456789
+          details:
+            - field: campaign
+              reason: INVALID_TIME_PROFILE
+          retryable: false
+    ResourceNotFound:
+      value:
+        error:
+          code: RESOURCE_NOT_FOUND
+          message: Die angeforderte Ressource wurde nicht gefunden.
+          correlationId: cor_01JABCDEF123456789
+          retryable: false
+    CampaignCreateConflict:
+      value:
+        error:
+          code: CAMPAIGN_CREATE_CONFLICT
+          message: Der Idempotenzschlüssel wurde bereits mit anderen Kampagnendaten verwendet.
+          correlationId: cor_01JABCDEF123456789
+          retryable: false
+    InternalServerError:
+      value:
+        error:
+          code: INTERNAL_ERROR
+          message: Ein unerwarteter Serverfehler ist aufgetreten.
+          correlationId: cor_01JABCDEF123456789
+          retryable: true
